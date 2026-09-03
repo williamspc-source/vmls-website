@@ -7,6 +7,9 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
-    include: ['tests/int/**/*.int.spec.ts'],
+    // `.tsx` too: the rich-text renderers can only be checked by rendering them.
+    // The `<h2><p>…</p></h2>` failure they exist to prevent produces valid HTML
+    // and no error, so a test that does not look at the markup cannot see it.
+    include: ['tests/int/**/*.int.spec.{ts,tsx}'],
   },
 })
