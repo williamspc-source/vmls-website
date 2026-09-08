@@ -1,0 +1,30 @@
+@import '@payloadcms/ui/scss';
+
+.dashboard .before-dashboard {
+  margin-bottom: base(1.5);
+
+  &__banner {
+    & h4 {
+      margin: 0;
+    }
+
+    // The error banner carries a paragraph as well as its heading, unlike the
+    // success one. Without this the two run together.
+    & p {
+      margin: base(0.4) 0 0;
+    }
+  }
+
+  &__instructions {
+    list-style: decimal;
+    margin-bottom: base(0.5);
+
+    & li {
+      width: 100%;
+    }
+  }
+
+  & a:hover {
+    opacity: 0.85;
+  }
+}
