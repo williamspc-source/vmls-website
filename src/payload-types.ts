@@ -67,18 +67,78 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
+    pages: Page;
+    posts: Post;
+    events: Event;
+    services: Service;
+    resources: Resource;
+    offices: Office;
+    testimonials: Testimonial;
+    specialties: Specialty;
+    'specialty-categories': SpecialtyCategory;
+    'claim-types': ClaimType;
+    'assessment-types': AssessmentType;
+    'event-types': EventType;
+    'areas-of-expertise': AreasOfExpertise;
+    accreditations: Accreditation;
+    locations: Location;
+    streams: Stream;
+    categories: Category;
+    departments: Department;
+    specialists: Specialist;
+    team: Team;
+    'availability-sessions': AvailabilitySession;
     media: Media;
+    icons: Icon;
+    users: User;
+    redirects: Redirect;
+    forms: Form;
+    'form-submissions': FormSubmission;
+    search: Search;
     'payload-kv': PayloadKv;
+    'payload-jobs': PayloadJob;
+    'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    'payload-folders': {
+      documentsAndFolders: 'payload-folders' | 'media';
+    };
+  };
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
+    events: EventsSelect<false> | EventsSelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
+    resources: ResourcesSelect<false> | ResourcesSelect<true>;
+    offices: OfficesSelect<false> | OfficesSelect<true>;
+    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
+    specialties: SpecialtiesSelect<false> | SpecialtiesSelect<true>;
+    'specialty-categories': SpecialtyCategoriesSelect<false> | SpecialtyCategoriesSelect<true>;
+    'claim-types': ClaimTypesSelect<false> | ClaimTypesSelect<true>;
+    'assessment-types': AssessmentTypesSelect<false> | AssessmentTypesSelect<true>;
+    'event-types': EventTypesSelect<false> | EventTypesSelect<true>;
+    'areas-of-expertise': AreasOfExpertiseSelect<false> | AreasOfExpertiseSelect<true>;
+    accreditations: AccreditationsSelect<false> | AccreditationsSelect<true>;
+    locations: LocationsSelect<false> | LocationsSelect<true>;
+    streams: StreamsSelect<false> | StreamsSelect<true>;
+    categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    departments: DepartmentsSelect<false> | DepartmentsSelect<true>;
+    specialists: SpecialistsSelect<false> | SpecialistsSelect<true>;
+    team: TeamSelect<false> | TeamSelect<true>;
+    'availability-sessions': AvailabilitySessionsSelect<false> | AvailabilitySessionsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    icons: IconsSelect<false> | IconsSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
+    redirects: RedirectsSelect<false> | RedirectsSelect<true>;
+    forms: FormsSelect<false> | FormsSelect<true>;
+    'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
+    search: SearchSelect<false> | SearchSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
+    'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
+    'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -87,15 +147,45 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'article-settings': ArticleSetting;
+    'events-settings': EventsSetting;
+    'team-settings': TeamSetting;
+    'specialist-profile': SpecialistProfile;
+    'specialist-availability': SpecialistAvailability;
+    header: Header;
+    footer: Footer;
+    'site-settings': SiteSetting;
+    'custom-styles': CustomStyle;
+    'design-system': DesignSystem;
+    'icon-library': IconLibrary;
+  };
+  globalsSelect: {
+    'article-settings': ArticleSettingsSelect<false> | ArticleSettingsSelect<true>;
+    'events-settings': EventsSettingsSelect<false> | EventsSettingsSelect<true>;
+    'team-settings': TeamSettingsSelect<false> | TeamSettingsSelect<true>;
+    'specialist-profile': SpecialistProfileSelect<false> | SpecialistProfileSelect<true>;
+    'specialist-availability': SpecialistAvailabilitySelect<false> | SpecialistAvailabilitySelect<true>;
+    header: HeaderSelect<false> | HeaderSelect<true>;
+    footer: FooterSelect<false> | FooterSelect<true>;
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    'custom-styles': CustomStylesSelect<false> | CustomStylesSelect<true>;
+    'design-system': DesignSystemSelect<false> | DesignSystemSelect<true>;
+    'icon-library': IconLibrarySelect<false> | IconLibrarySelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
   };
   user: User;
   jobs: {
-    tasks: unknown;
+    tasks: {
+      schedulePublish: TaskSchedulePublish;
+      inline: {
+        input: unknown;
+        output: unknown;
+      };
+    };
     workflows: unknown;
   };
 }
@@ -118,11 +208,1329 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * The pages of the site. Each is built from blocks; a page’s web address comes from its Parent, so changing the parent changes the URL.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  hero: {
+    type: 'none' | 'pageHero' | 'homeHero' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    /**
+     * Small uppercase label above the heading.
+     */
+    eyebrow?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour. Press Enter to start a new line of the same heading.
+     */
+    heading?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    subtitle?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Show the breadcrumb trail above the heading.
+     */
+    showBreadcrumb?: boolean | null;
+    /**
+     * Light interior hero, a dark gradient band, or a soft-blue service band.
+     */
+    theme?: ('light' | 'dark' | 'service') | null;
+    align?: ('left' | 'center') | null;
+    /**
+     * Decorative brand shield on the definition panel. The image comes from Site Settings → Brand assets → Shield / seal mark, falling back to the bundled VERIFY shield.
+     */
+    showShield?: boolean | null;
+    /**
+     * Two-column hero with a large image placeholder on the right (design-reference In-the-Loop hero).
+     */
+    imagePanel?: boolean | null;
+    /**
+     * Caption inside the image placeholder, e.g. "Company Image Placeholder".
+     */
+    imagePanelLabel?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Optional icon + text row under the hero (e.g. phone / email / hours on Contact).
+     */
+    metaItems?:
+      | {
+          /**
+           * Icon shown with this item.
+           */
+          icon?: string | null;
+          text: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          href?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Section background colour.
+     */
+    heroBackground?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+    /**
+     * Content width for this section.
+     */
+    containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+    /**
+     * Space above the hero content.
+     */
+    heroPaddingTop?: ('default' | 'none' | 'compact' | 'normal' | 'spacious' | 'xl') | null;
+    /**
+     * Space below the hero content.
+     */
+    heroPaddingBottom?: ('default' | 'none' | 'compact' | 'normal' | 'spacious' | 'xl') | null;
+    /**
+     * The dictionary-style panel shown beside the home hero.
+     */
+    definition?: {
+      /**
+       * e.g. "verify"
+       */
+      term?: {
+        root: {
+          type: string;
+          children: {
+            type: any;
+            version: number;
+            [k: string]: unknown;
+          }[];
+          direction: ('ltr' | 'rtl') | null;
+          format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+          indent: number;
+          version: number;
+        };
+        [k: string]: unknown;
+      } | null;
+      /**
+       * e.g. "/ˈvɛrɪfʌɪ/ · verb"
+       */
+      pronunciation?: {
+        root: {
+          type: string;
+          children: {
+            type: any;
+            version: number;
+            [k: string]: unknown;
+          }[];
+          direction: ('ltr' | 'rtl') | null;
+          format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+          indent: number;
+          version: number;
+        };
+        [k: string]: unknown;
+      } | null;
+      text?: {
+        root: {
+          type: string;
+          children: {
+            type: any;
+            version: number;
+            [k: string]: unknown;
+          }[];
+          direction: ('ltr' | 'rtl') | null;
+          format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+          indent: number;
+          version: number;
+        };
+        [k: string]: unknown;
+      } | null;
+      /**
+       * Visual treatment for the definition panel.
+       */
+      definitionStyle?: ('glow' | 'frame') | null;
+      /**
+       * Pointer effects on the panel. Visitors who have asked their device to reduce motion always get the calm version automatically, and touch devices get no motion at all.
+       */
+      interaction?: ('full' | 'subtle' | 'off') | null;
+    };
+    richText?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    links?:
+      | {
+          link: {
+            type?: ('reference' | 'custom' | 'enquiry') | null;
+            newTab?: boolean | null;
+            /**
+             * You can link to a draft. The link will 404 for visitors until that document is published.
+             */
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null)
+              | ({
+                  relationTo: 'specialists';
+                  value: number | Specialist;
+                } | null)
+              | ({
+                  relationTo: 'team';
+                  value: number | Team;
+                } | null)
+              | ({
+                  relationTo: 'events';
+                  value: number | Event;
+                } | null);
+            url?: string | null;
+            label: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            /**
+             * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+             */
+            anchor?: string | null;
+            /**
+             * Optional leading icon shown before the label.
+             */
+            icon?: string | null;
+            /**
+             * Choose how the link should be rendered.
+             */
+            appearance?: ('default' | 'outline') | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Hero image. Background for the impact heroes, the side image on the home hero, and the contents of the image panel on a page hero.
+     */
+    media?: (number | null) | Media;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    cssClass?: string[] | null;
+  };
+  layout: (
+    | SectionBlock
+    | RowBlock
+    | CallToActionBlock
+    | ContentBlock
+    | MediaBlock
+    | ArchiveBlock
+    | FormBlock
+    | FAQBlock
+    | GatewayCardsBlock
+    | FeatureGridBlock
+    | StatsBandBlock
+    | ProcessStepsBlock
+    | TabsBlockType
+    | SplitFeatureBlock
+    | CTABandBlock
+    | SpecialtyGridBlock
+    | PeopleGridBlock
+    | ServicesGridBlock
+    | TestimonialsGridBlock
+    | AvailabilityBlock
+    | SlideCarouselBlock
+    | SpecialistDirectoryBlock
+    | SpecialtyDirectoryBlock
+    | ResourcesGridBlock
+    | AppointmentGuideBlock
+    | MapEmbedBlock
+    | ContactDetailsBlock
+    | IconListBlock
+    | CalloutBlock
+    | AamleEducationBlock
+    | MissionPillarsBlock
+    | ValueCardsBlock
+    | WhyVerifyBlock
+    | LeadershipSpotlightBlock
+    | AudiencePathwaysBlock
+    | BookingChooserBlock
+    | CostGridBlock
+    | PortalCtaBlock
+    | NewsletterBlock
+    | VideoEmbedBlock
+    | TryBookingBlock
+    | SectionNavBlock
+    | FeaturedArticlesBlock
+    | EventsExplorerBlock
+  )[];
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  publishedAt?: string | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  parent?: (number | null) | Page;
+  breadcrumbs?:
+    | {
+        doc?: (number | null) | Page;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Articles published to the In the Loop section (/in-the-loop). Every article needs a Stream — that is what gives it a web address.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: number;
+  title: string;
+  heroImage?: (number | null) | Media;
+  /**
+   * Short summary shown on listings / cards.
+   */
+  excerpt?: string | null;
+  /**
+   * Estimated reading time, e.g. 2.
+   */
+  readTime?: number | null;
+  /**
+   * Shown in the article meta bar and author card. Type a byline directly, or link a Team member / Specialist to source it. Collective bylines like "VERIFY Editorial Team" are supported via the free-text fields.
+   */
+  author?: {
+    /**
+     * Auto-sources name/role/photo/bio from a Team member or Specialist.
+     */
+    source?:
+      | ({
+          relationTo: 'team';
+          value: number | Team;
+        } | null)
+      | ({
+          relationTo: 'specialists';
+          value: number | Specialist;
+        } | null);
+    name?: string | null;
+    /**
+     * e.g. "Senior Coordination Manager".
+     */
+    role?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    photo?: (number | null) | Media;
+    bio?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Optional downloadable files (e.g. a checklist PDF).
+   */
+  attachments?:
+    | {
+        file: number | Media;
+        label?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Auto-generate the in-article contents from headings.
+   */
+  showToc?: boolean | null;
+  relatedPosts?: (number | Post)[] | null;
+  categories?: (number | Category)[] | null;
+  /**
+   * Which In-the-Loop section this belongs to (drives URL + hub placement).
+   */
+  stream: number | Stream;
+  /**
+   * Show in the featured carousel on the In-the-Loop hub.
+   */
+  featured?: boolean | null;
+  /**
+   * Optional — the specialty for a Specialist Spotlight post.
+   */
+  specialty?: (number | null) | Specialty;
+  /**
+   * Optional — the specialist featured in a spotlight.
+   */
+  relatedSpecialist?: (number | null) | Specialist;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  publishedAt?: string | null;
+  authors?: (number | User)[] | null;
+  populatedAuthors?:
+    | {
+        id?: string | null;
+        name?: string | null;
+      }[]
+    | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Every uploaded image and file. Set alt text here, and fix a bad crop by moving the focal point rather than re-uploading.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  alt: string;
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional zoom for cropped avatars/headshots (100 = fit, 150 = 1.5× into the focal point). Set the focal point above to choose which part of the image stays centred; increase zoom to fill more of the frame.
+   */
+  zoom?: number | null;
+  folder?: (number | null) | FolderInterface;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    square?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    small?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    medium?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    large?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    xlarge?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    og?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-folders".
+ */
+export interface FolderInterface {
+  id: number;
+  name: string;
+  folder?: (number | null) | FolderInterface;
+  documentsAndFolders?: {
+    docs?: (
+      | {
+          relationTo?: 'payload-folders';
+          value: number | FolderInterface;
+        }
+      | {
+          relationTo?: 'media';
+          value: number | Media;
+        }
+    )[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  folderType?: 'media'[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * VERIFY’s own staff. Each gets a profile at /about/team/... and appears on Meet the Team. Save as a draft to hide one.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team".
+ */
+export interface Team {
+  id: number;
+  title: string;
+  /**
+   * e.g. "IT Manager | Lawyer".
+   */
+  role?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Used on Meet the Team, and as the byline photo wherever this person is credited on an article. Also used on their own profile page unless a Profile photo is set below. Fix a bad crop by moving the focal point on the image in Media.
+   */
+  photo?: (number | null) | Media;
+  /**
+   * Optional. Shown instead of the Team photo on this person’s own profile page only — Meet the Team and article bylines keep using the Team photo. Leave empty to use the Team photo in both places.
+   */
+  profilePhoto?: (number | null) | Media;
+  /**
+   * Hides the photo on this person’s profile page; they still appear with their Team photo on Meet the Team. This wins over both uploads, so you can hide the photo without deleting it.
+   */
+  hidePhotoOnProfile?: boolean | null;
+  /**
+   * Changes the shape of the photo frame on this person’s own profile page only — their card on the listing pages, in directories and on article bylines is not affected. If the photo is framed badly rather than the wrong shape, move the focal point on the image in Media instead.
+   */
+  profilePhotoShape?: ('tall' | 'portrait' | 'square') | null;
+  bio?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  qualifications?:
+    | {
+        qualification: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional titled sections beyond the bio (e.g. Expertise, Affiliations).
+   */
+  sections?:
+    | {
+        heading: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        body?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  /**
+   * Which team this person is in. Add a new one under Taxonomy → Departments.
+   */
+  department: number | Department;
+  /**
+   * Sort order within the department (lower shows first).
+   */
+  order?: number | null;
+  publishedAt?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * The teams staff are grouped into. Each becomes a labelled group on Meet the Team, in the order below. Add one here and it is immediately selectable on every team member.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "departments".
+ */
+export interface Department {
+  id: number;
+  /**
+   * e.g. "Operations", "Quality Assurance". Shown as the group heading.
+   */
+  title: string;
+  /**
+   * Order of the groups on Meet the Team (lower shows first). This genuinely drives the page — it replaced a list fixed in code.
+   */
+  order?: number | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * The external doctors on your panel. Each gets a profile page at /specialists/profiles/... Save as a draft to hide one from the site. Drag a row by its handle to set the running order — that order only reaches the public site on a Specialist Directory block whose Sort order is set to Custom, and the list shows 10 at a time, so moving someone a long way means dragging across pages.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "specialists".
+ */
+export interface Specialist {
+  id: number;
+  _order?: string | null;
+  /**
+   * Full display name including honorific, e.g. "Dr Adam Parr".
+   */
+  title: string;
+  /**
+   * e.g. "Consultant Spinal Surgeon".
+   */
+  position?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional. Falls back to an initials avatar on the frontend.
+   */
+  photo?: (number | null) | Media;
+  /**
+   * Changes the shape of the photo frame on this person’s own profile page only — their card on the listing pages, in directories and on article bylines is not affected. If the photo is framed badly rather than the wrong shape, move the focal point on the image in Media instead.
+   */
+  profilePhotoShape?: ('tall' | 'portrait' | 'square') | null;
+  bio?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Cities / regions where this specialist consults. Drives the directory location filter.
+   */
+  locations?: (number | Location)[] | null;
+  qualifications?:
+    | {
+        qualification: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        /**
+         * Optional icon (e.g. graduation-cap, certificate).
+         */
+        icon?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Impairment-rating credentials — drives the Specialist Panel accreditation filter and the profile chips.
+   */
+  accreditations?: (number | Accreditation)[] | null;
+  /**
+   * Languages spoken (e.g. English).
+   */
+  languages?:
+    | {
+        language: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional direct booking / enquiry URL.
+   */
+  bookingUrl?: string | null;
+  /**
+   * Optional downloadable CV.
+   */
+  cv?: (number | null) | Media;
+  /**
+   * Optional redacted sample report.
+   */
+  sampleReport?: (number | null) | Media;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  specialty: number | Specialty;
+  claimTypes?: (number | ClaimType)[] | null;
+  assessmentTypes?: (number | AssessmentType)[] | null;
+  areasOfExpertise?: (number | AreasOfExpertise)[] | null;
+  /**
+   * Show in featured listings (e.g. the homepage).
+   */
+  featured?: boolean | null;
+  /**
+   * Show this specialist in the featured carousel on the Specialist Availability page. Their session list is driven separately by their Availability Sessions.
+   */
+  advertise?: boolean | null;
+  availabilityHighlight?: boolean | null;
+  availabilityNote?: string | null;
+  /**
+   * Fills in automatically from the Full name — you only need to touch it if the split is wrong (a middle name, or an unusual title). Used to sort the directory by given name.
+   */
+  firstName?: string | null;
+  /**
+   * Fills in automatically from the Full name, taking everything after the given name — so a two-word surname like "Mar Fan" stays whole. Used to sort the directory by surname.
+   */
+  lastName?: string | null;
+  publishedAt?: string | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * Where specialists consult. Shown on a profile and used as a directory filter. Not the same as Offices, which are your own premises.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "locations".
+ */
+export interface Location {
+  id: number;
+  /**
+   * e.g. "Brisbane CBD", "Gold Coast", "Telehealth / Videolink".
+   */
+  title: string;
+  /**
+   * Optional grouping (e.g. "South East Queensland").
+   */
+  region?: string | null;
+  /**
+   * Lower numbers appear first in this admin list. The public filters are alphabetical and ignore it.
+   */
+  order?: number | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Impairment-rating credentials (AMA 5, GEPI 2...). Shown as chips on a specialist’s profile and used as a directory filter.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "accreditations".
+ */
+export interface Accreditation {
+  id: number;
+  /**
+   * e.g. "AMA 5", "GEPI 2", "CIME (ABIME)", "PIRS".
+   */
+  title: string;
+  /**
+   * Icon shown with the accreditation chip (e.g. seal-check).
+   */
+  icon?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Medical specialties. They drive the Specialty List page and the specialist directory filters.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "specialties".
+ */
+export interface Specialty {
+  id: number;
+  title: string;
+  /**
+   * Icon shown for this specialty in directories/grids.
+   */
+  icon?: string | null;
+  /**
+   * Filter group on the Specialty List page (Surgery / Psychiatry / …).
+   */
+  category?: (number | null) | SpecialtyCategory;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Short tags shown under the specialty (e.g. Hip & knee, Trauma).
+   */
+  keyAreas?:
+    | {
+        area: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Display order in the Specialty List (ascending).
+   */
+  order?: number | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * The groups that specialties are filed under (Surgery, Psychiatry...). They become the filter buttons on the Specialty List.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "specialty-categories".
+ */
+export interface SpecialtyCategory {
+  id: number;
+  /**
+   * e.g. "Surgery", "Psychiatry & Psychology", "Medicine", "Allied Health".
+   */
+  title: string;
+  /**
+   * Icon shown on the filter button for this group.
+   */
+  icon?: string | null;
+  /**
+   * Lower numbers appear first in the filter bar / accordion.
+   */
+  order?: number | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Kinds of claim a specialist handles. Listed on their profile under "Claim Types".
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "claim-types".
+ */
+export interface ClaimType {
+  id: number;
+  title: string;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Display order in the "Claims We Support" list (ascending).
+   */
+  order?: number | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Kinds of assessment a specialist performs. Listed on their profile under "Assessment Types".
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "assessment-types".
+ */
+export interface AssessmentType {
+  id: number;
+  title: string;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Sub-specialty areas a specialist assesses. Listed on their profile under "Assessment Areas", and used to filter the specialist directory.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "areas-of-expertise".
+ */
+export interface AreasOfExpertise {
+  id: number;
+  title: string;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Subject tags for articles. Shown as coloured chips on article cards and under the "Topics" heading on an article.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number;
+  title: string;
+  /**
+   * Icon shown on the category/topic chip.
+   */
+  icon?: string | null;
+  /**
+   * Optional hex for the category chip, e.g. #1c75bc.
+   */
+  color?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  parent?: (number | null) | Category;
+  breadcrumbs?:
+    | {
+        doc?: (number | null) | Category;
+        url?: string | null;
+        label?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * The sections of In the Loop. A stream is the folder in an article’s web address (/in-the-loop/<stream>/...), so DELETING a stream leaves its articles with no address — move them first.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "streams".
+ */
+export interface Stream {
+  id: number;
+  /**
+   * e.g. "QA Insights", "News & Updates", "Specialist Spotlights".
+   */
+  title: string;
+  /**
+   * Icon shown on the stream tab / category chip.
+   */
+  icon?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Sort order in the admin list. Note: the In-the-Loop hub’s section nav is authored by hand in the Section Nav block on that page, so changing this does NOT reorder the public nav — edit the block instead.
+   */
+  order?: number | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Admin logins. Everyone here has full access — there are no restricted roles, so only add people you trust with the whole site.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
   id: number;
+  name?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -143,12 +1551,8528 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Seminars and webinars, listed at /events. After an event you can add a recap, photo gallery and downloads to the same record.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
+ * via the `definition` "events".
  */
-export interface Media {
+export interface Event {
   id: number;
-  alt: string;
+  title: string;
+  /**
+   * Start date & time. Decides whether the event shows as Upcoming or Past — it counts as upcoming for the whole of its day.
+   */
+  date: string;
+  /**
+   * e.g. "12:30 pm – 1:30 pm".
+   */
+  timeLabel?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  location?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  host?: ('aamle' | 'verify') | null;
+  /**
+   * External booking link (e.g. AAMLE).
+   */
+  registrationUrl?: string | null;
+  /**
+   * e.g. "Register on AAMLE", "Register Your Interest". Optional.
+   */
+  registrationLabel?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * This event’s own page on the host’s website (e.g. an aamle.com.au event page). Adds a “View this event on AAMLE” button. Leave empty and the button is not shown.
+   */
+  hostEventUrl?: string | null;
+  /**
+   * When registrations / expressions of interest stop being accepted. After this the button changes from "Register Your Interest" to "Contact Us". Leave empty to close at the event's start time. Set it later to keep registrations open once the event has begun, or earlier to close them in advance. This is separate from the Upcoming/Past badge, which follows the start date.
+   */
+  registrationClosesAt?: string | null;
+  cpdEligible?: boolean | null;
+  cpdPoints?: number | null;
+  /**
+   * e.g. "Free", "$120". Defaults to Free if empty.
+   */
+  cost?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional — link to a Location for structured filtering. The free-text "location" above is still shown if set.
+   */
+  locationRef?: (number | null) | Location;
+  /**
+   * Optional. Shown on the events listings and on the Events hub cards. Without one, the event falls back to a date calendar showing the day and month — so a missing photo never leaves an empty panel. Cropped to fill, so a landscape image works best.
+   */
+  image?: (number | null) | Media;
+  /**
+   * Short summary used in listings.
+   */
+  excerpt?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional write-up shown after the event has passed.
+   */
+  recap?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Lists the recap’s headings above it, each one a link. Only appears when the recap has two or more headings.
+   */
+  showToc?: boolean | null;
+  /**
+   * Photos from the day. Shown beneath the recap as soon as you add one.
+   */
+  gallery?:
+    | {
+        image: number | Media;
+        caption?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Slides, handouts, recordings — anything to offer as a download.
+   */
+  attachments?:
+    | {
+        file: number | Media;
+        /**
+         * Shown instead of the filename.
+         */
+        label?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  meta?: {
+    title?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (number | null) | Media;
+    description?: string | null;
+  };
+  /**
+   * Manage the list under Taxonomy → Event Types. Adding one there makes it selectable here immediately.
+   */
+  eventType: number | EventType;
+  /**
+   * Presenters who are on the panel or the team. They render as linked cards on the event page. For an outside speaker, use “Guest presenters” below instead.
+   */
+  presenters?:
+    | (
+        | {
+            relationTo: 'specialists';
+            value: number | Specialist;
+          }
+        | {
+            relationTo: 'team';
+            value: number | Team;
+          }
+      )[]
+    | null;
+  /**
+   * Speakers who are not on the VERIFY panel or team.
+   */
+  guestPresenters?:
+    | {
+        name: string;
+        role?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        organisation?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * The kinds of event you run. Add one here and it is immediately selectable on every event; the name you give it is the badge a visitor sees.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "event-types".
+ */
+export interface EventType {
+  id: number;
+  /**
+   * e.g. "Breakfast Seminar", "Webinar". Shown as the badge on an event card.
+   */
+  title: string;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SectionBlock".
+ */
+export interface SectionBlock {
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Space above the content.
+   */
+  paddingTop?: ('none' | 'compact' | 'normal' | 'spacious' | 'xl') | null;
+  /**
+   * Space below the content.
+   */
+  paddingBottom?: ('none' | 'compact' | 'normal' | 'spacious' | 'xl') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  align?: ('left' | 'center') | null;
+  content?:
+    | (
+        | RowBlock
+        | HeadingBlock
+        | TextBlock
+        | ButtonBlock
+        | ImageBlock
+        | SpacerBlock
+        | DividerBlock
+        | IconBlock
+        | ContentBlock
+        | MediaBlock
+        | CallToActionBlock
+        | FAQBlock
+        | GatewayCardsBlock
+        | FeatureGridBlock
+        | ProcessStepsBlock
+        | SpecialtyGridBlock
+        | PeopleGridBlock
+        | ServicesGridBlock
+        | TestimonialsGridBlock
+        | StatsBandBlock
+        | TabsBlockType
+        | SplitFeatureBlock
+        | CTABandBlock
+        | CalloutBlock
+        | ContactDetailsBlock
+        | IconListBlock
+        | MapEmbedBlock
+        | LeadershipSpotlightBlock
+        | PortalCtaBlock
+        | VideoEmbedBlock
+        | TryBookingBlock
+        | FormBlock
+      )[]
+    | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'section';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RowBlock".
+ */
+export interface RowBlock {
+  /**
+   * Space between columns.
+   */
+  gap?: ('none' | 'tight' | 'normal' | 'wide' | 'x-wide') | null;
+  /**
+   * How columns line up vertically.
+   */
+  alignY?: ('top' | 'center' | 'bottom' | 'stretch') | null;
+  /**
+   * Relative width of the columns. Applies to two-column rows only; leave unset for equal columns.
+   */
+  columnRatio?: ('equal' | '2-3' | '3-2' | '1-2' | '2-1') | null;
+  /**
+   * Each column becomes a grid track. Add columns to widen the row.
+   */
+  columns?:
+    | {
+        /**
+         * How many grid columns this column occupies (Auto = equal share).
+         */
+        span?: ('auto' | '1' | '2' | '3' | '4') | null;
+        align?: ('left' | 'center' | 'right') | null;
+        content?:
+          | (
+              | HeadingBlock
+              | TextBlock
+              | ButtonBlock
+              | ImageBlock
+              | SpacerBlock
+              | DividerBlock
+              | IconBlock
+              | ContentBlock
+              | MediaBlock
+              | CallToActionBlock
+              | FAQBlock
+              | GatewayCardsBlock
+              | FeatureGridBlock
+              | ProcessStepsBlock
+              | SpecialtyGridBlock
+              | PeopleGridBlock
+              | ServicesGridBlock
+              | TestimonialsGridBlock
+              | StatsBandBlock
+              | TabsBlockType
+              | SplitFeatureBlock
+              | CTABandBlock
+              | CalloutBlock
+              | ContactDetailsBlock
+              | IconListBlock
+              | MapEmbedBlock
+              | LeadershipSpotlightBlock
+              | PortalCtaBlock
+              | VideoEmbedBlock
+              | TryBookingBlock
+              | FormBlock
+            )[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'row';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeadingBlock".
+ */
+export interface HeadingBlock {
+  text: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * HTML tag for SEO/accessibility. Visual size is set separately.
+   */
+  level?: ('h1' | 'h2' | 'h3' | 'h4') | null;
+  /**
+   * Visual size, independent of the heading level.
+   */
+  size?: ('sm' | 'md' | 'lg' | 'xl' | 'display') | null;
+  align?: ('left' | 'center' | 'right') | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'heading';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TextBlock".
+ */
+export interface TextBlock {
+  richText?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  size?: ('sm' | 'base' | 'lg') | null;
+  align?: ('left' | 'center' | 'right') | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'text';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ButtonBlock".
+ */
+export interface ButtonBlock {
+  links?:
+    | {
+        link: {
+          type?: ('reference' | 'custom' | 'enquiry' | 'portalEnquiry') | null;
+          newTab?: boolean | null;
+          /**
+           * You can link to a draft. The link will 404 for visitors until that document is published.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'specialists';
+                value: number | Specialist;
+              } | null)
+            | ({
+                relationTo: 'team';
+                value: number | Team;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
+              } | null);
+          url?: string | null;
+          label: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          /**
+           * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+           */
+          anchor?: string | null;
+          /**
+           * Optional leading icon shown before the label.
+           */
+          icon?: string | null;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  size?: ('sm' | 'md' | 'lg') | null;
+  align?: ('left' | 'center' | 'right') | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'button';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageBlock".
+ */
+export interface ImageBlock {
+  media: number | Media;
+  width?: ('full' | 'wide' | 'normal' | 'narrow') | null;
+  rounded?: ('none' | 'sm' | 'md' | 'full') | null;
+  /**
+   * Drop shadow behind the image. Edit the values in Globals → Design System.
+   */
+  shadow?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+  align?: ('left' | 'center' | 'right') | null;
+  /**
+   * Optional caption shown below the image.
+   */
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'image';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SpacerBlock".
+ */
+export interface SpacerBlock {
+  size?: ('xs' | 'sm' | 'md' | 'lg' | 'xl') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'spacer';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DividerBlock".
+ */
+export interface DividerBlock {
+  style?: ('line' | 'dots' | 'gradient') | null;
+  width?: ('full' | 'narrow') | null;
+  align?: ('left' | 'center' | 'right') | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'divider';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IconBlock".
+ */
+export interface IconBlock {
+  /**
+   * Icon shown with this item.
+   */
+  icon: string;
+  size?: ('sm' | 'md' | 'lg') | null;
+  color?: ('primary' | 'accent' | 'muted' | 'inherit') | null;
+  align?: ('left' | 'center' | 'right') | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'iconBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContentBlock".
+ */
+export interface ContentBlock {
+  columns?:
+    | {
+        size?: ('oneThird' | 'half' | 'twoThirds' | 'full') | null;
+        richText?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        enableLink?: boolean | null;
+        link?: {
+          type?: ('reference' | 'custom' | 'enquiry') | null;
+          newTab?: boolean | null;
+          /**
+           * You can link to a draft. The link will 404 for visitors until that document is published.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'specialists';
+                value: number | Specialist;
+              } | null)
+            | ({
+                relationTo: 'team';
+                value: number | Team;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
+              } | null);
+          url?: string | null;
+          label: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          /**
+           * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+           */
+          anchor?: string | null;
+          /**
+           * Optional leading icon shown before the label.
+           */
+          icon?: string | null;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'content';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaBlock".
+ */
+export interface MediaBlock {
+  media: number | Media;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mediaBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallToActionBlock".
+ */
+export interface CallToActionBlock {
+  richText?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  links?:
+    | {
+        link: {
+          type?: ('reference' | 'custom' | 'enquiry') | null;
+          newTab?: boolean | null;
+          /**
+           * You can link to a draft. The link will 404 for visitors until that document is published.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'specialists';
+                value: number | Specialist;
+              } | null)
+            | ({
+                relationTo: 'team';
+                value: number | Team;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
+              } | null);
+          url?: string | null;
+          label: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          /**
+           * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+           */
+          anchor?: string | null;
+          /**
+           * Optional leading icon shown before the label.
+           */
+          icon?: string | null;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cta';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FAQBlock".
+ */
+export interface FAQBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Lay the questions out in one or two columns, or side by side — heading and intro in a left column with the questions beside them (the services-page treatment).
+   */
+  columns?: ('1' | '2' | 'split') | null;
+  /**
+   * Card keeps each question in its own outlined white box. Divided drops the boxes for a flat list separated by hairline rules.
+   */
+  itemStyle?: ('card' | 'divided') | null;
+  /**
+   * The open/close marker at the end of each question. Pill puts the + and − inside a filled circle.
+   */
+  toggleStyle?: ('plus' | 'chevron' | 'pill') | null;
+  /**
+   * How a question’s icon is drawn. Tile sets it in a rounded tinted square and indents the answer to line up beneath the text.
+   */
+  iconStyle?: ('inline' | 'tile') | null;
+  /**
+   * Compact tightens the row height and text size a step.
+   */
+  density?: ('comfortable' | 'compact') | null;
+  /**
+   * Content width, for a FAQ placed directly on the page. Leave unset for the narrow column this block has always used; the reference widens it where an accordion carries icons. Ignored when this block sits INSIDE a Section — the Section sets the width there.
+   */
+  containerWidth?: ('narrow' | 'normal' | 'wide' | 'full') | null;
+  /**
+   * Colour of the hairline rules between questions. Brand tinted suits an accordion sitting on a coloured band.
+   */
+  ruleStyle?: ('light' | 'grey' | 'brand') | null;
+  items?:
+    | {
+        question: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        /**
+         * Optional icon.
+         */
+        icon?: string | null;
+        /**
+         * Optional image. Shown beneath the heading in the “Side by side” layout (first item that has one wins); ignored in the 1- and 2-column layouts.
+         */
+        image?: (number | null) | Media;
+        answer: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        /**
+         * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+         */
+        anchorId?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Opening one question closes the others.
+   */
+  exclusive?: boolean | null;
+  openFirst?: boolean | null;
+  /**
+   * A "still have questions?" card shown after the list.
+   */
+  helpCard?: {
+    heading?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    body?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    email?: string | null;
+    phone?: string | null;
+  };
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'faq';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GatewayCardsBlock".
+ */
+export interface GatewayCardsBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  columns?: ('2' | '3' | '4') | null;
+  cards?:
+    | {
+        /**
+         * Icon shown with this item.
+         */
+        icon?: string | null;
+        /**
+         * Small label above the title.
+         */
+        eyebrow?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Secondary line under the title (e.g. audience).
+         */
+        subtitle?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        title: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        description?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Card accent colour theme.
+         */
+        accent?: ('blue' | 'steel' | 'charcoal') | null;
+        /**
+         * Light or dark card surface (for the split chooser).
+         */
+        theme?: ('light' | 'dark') | null;
+        /**
+         * Listed in the lower panel above the call-to-action button.
+         */
+        links?:
+          | {
+              link: {
+                type?: ('reference' | 'custom' | 'enquiry') | null;
+                newTab?: boolean | null;
+                /**
+                 * You can link to a draft. The link will 404 for visitors until that document is published.
+                 */
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null)
+                  | ({
+                      relationTo: 'specialists';
+                      value: number | Specialist;
+                    } | null)
+                  | ({
+                      relationTo: 'team';
+                      value: number | Team;
+                    } | null)
+                  | ({
+                      relationTo: 'events';
+                      value: number | Event;
+                    } | null);
+                url?: string | null;
+                label: {
+                  root: {
+                    type: string;
+                    children: {
+                      type: any;
+                      version: number;
+                      [k: string]: unknown;
+                    }[];
+                    direction: ('ltr' | 'rtl') | null;
+                    format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                    indent: number;
+                    version: number;
+                  };
+                  [k: string]: unknown;
+                };
+                /**
+                 * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+                 */
+                anchor?: string | null;
+                /**
+                 * Optional leading icon shown before the label.
+                 */
+                icon?: string | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        link: {
+          type?: ('reference' | 'custom' | 'enquiry') | null;
+          newTab?: boolean | null;
+          /**
+           * You can link to a draft. The link will 404 for visitors until that document is published.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'specialists';
+                value: number | Specialist;
+              } | null)
+            | ({
+                relationTo: 'team';
+                value: number | Team;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
+              } | null);
+          url?: string | null;
+          label: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          /**
+           * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+           */
+          anchor?: string | null;
+          /**
+           * Optional leading icon shown before the label.
+           */
+          icon?: string | null;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Apply preset classes to specific parts of this block.
+   */
+  elementClasses?: {
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    heading?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    card?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    button?: string[] | null;
+  };
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  /**
+   * Hover effect for cards/items in this block.
+   */
+  hoverEffect?: ('none' | 'lift' | 'glow' | 'zoom' | 'accent-bar') | null;
+  /**
+   * Resting depth/glow for cards in this block. Edit what each preset looks like in Globals → Design System → Shadows & glows.
+   */
+  shadow?: ('default' | 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'glow' | 'glow-strong') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'gatewayCards';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureGridBlock".
+ */
+export interface FeatureGridBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  columns?: ('1' | '2' | '3' | '4') | null;
+  /**
+   * “Banded” puts the icon and title on a tinted panel across the top of each card, with the description and details below it. “Soft” is the quieter treatment used for the support cards on Information for Clients — flat white, a softer shadow, and a gentle lift on hover instead of the bolder shift. “Benefit” is the centred treatment used for “Why Join VERIFY” on Join the Expert Panel — no icon tile, just a large plain icon above a centred title, with the description justified.
+   */
+  cardStyle?: ('card' | 'plain' | 'banded' | 'soft' | 'benefit') | null;
+  items?:
+    | {
+        /**
+         * Icon shown with this item.
+         */
+        icon?: string | null;
+        title: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        /**
+         * Optional second-line / type label under the title (e.g. "In-Person").
+         */
+        titleSuffix?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        description?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Optional simple bulleted list.
+         */
+        bullets?:
+          | {
+              text: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * Optional label above a nested detail list (e.g. "What's Included").
+         */
+        detailsLabel?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Nested icon + title + description sub-items (e.g. Assessment Format cards).
+         */
+        details?:
+          | {
+              /**
+               * Icon shown with this item.
+               */
+              icon?: string | null;
+              title: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              };
+              description?: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              } | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Weight of this section’s heading. “Heavy” is the bolder treatment used on Join the Expert Panel. Leave as “Default” to match the rest of the site.
+   */
+  headingWeight?: ('default' | 'heavy') | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Apply preset classes to specific parts of this block.
+   */
+  elementClasses?: {
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    heading?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    card?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    button?: string[] | null;
+  };
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  /**
+   * Hover effect for cards/items in this block.
+   */
+  hoverEffect?: ('none' | 'lift' | 'glow' | 'zoom' | 'accent-bar') | null;
+  /**
+   * Resting depth/glow for cards in this block. Edit what each preset looks like in Globals → Design System → Shadows & glows.
+   */
+  shadow?: ('default' | 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'glow' | 'glow-strong') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featureGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProcessStepsBlock".
+ */
+export interface ProcessStepsBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  /**
+   * Layout. "Cards" = numbered card grid. "Two-row process" = connected numbered rows (01–03 blue, 04+ dark) matching the reference Our Process. "Claimant step list" = left intro + a compact numbered list on the right (reference Your Examination Step by Step).
+   */
+  variant?: ('cards' | 'two-row' | 'claimant' | 'edu-panels') | null;
+  numberStyle?: ('padded' | 'plain') | null;
+  /**
+   * Replaces the plain Subheading for this variant, adding bold and italic. Leave empty to keep using Subheading.
+   */
+  introRich?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional photo below the intro copy. It fills a fixed 4:3 frame, cropped around the focal point set on the image in Media — so fix a bad crop there rather than re-exporting the file.
+   */
+  image?: (number | null) | Media;
+  /**
+   * Draws the pale-blue placeholder tile until a photo is uploaded. Uploading one replaces it outright — caption and glyph with it — so you can leave this ticked.
+   */
+  imagePlaceholder?: boolean | null;
+  /**
+   * Optional caption inside the placeholder (e.g. "IMAGE PLACEHOLDER").
+   */
+  placeholderLabel?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional glyph above the placeholder caption. Left unset the tile is the caption alone, which is how the reference draws its empty-photo boxes on /services.
+   */
+  placeholderIcon?: string | null;
+  /**
+   * How many steps per row on desktop (Cards + Two-row variants).
+   */
+  columns?: ('1' | '2' | '3' | '4' | '5') | null;
+  /**
+   * Steps are auto-numbered in order (01, 02, …).
+   */
+  steps?:
+    | {
+        /**
+         * Icon shown with this item.
+         */
+        icon?: string | null;
+        /**
+         * Optional pill label, e.g. "Free to Join".
+         */
+        badge?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Highlight brightens the pill so one step stands out from the others.
+         */
+        badgeStyle?: ('plain' | 'accent') | null;
+        /**
+         * Optional — leave empty for a number-only step.
+         */
+        title?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Body copy for the step. Bold and italic are available — the reference AAMLE panel bolds an organisation name and italicises a publication title.
+         */
+        description?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Optional bulleted list under the description.
+         */
+        bullets?:
+          | {
+              text: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Apply preset classes to specific parts of this block.
+   */
+  elementClasses?: {
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    heading?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    card?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    button?: string[] | null;
+  };
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  /**
+   * Hover effect for cards/items in this block.
+   */
+  hoverEffect?: ('none' | 'lift' | 'glow' | 'zoom' | 'accent-bar') | null;
+  /**
+   * Resting depth/glow for cards in this block. Edit what each preset looks like in Globals → Design System → Shadows & glows.
+   */
+  shadow?: ('default' | 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'glow' | 'glow-strong') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'processSteps';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SpecialtyGridBlock".
+ */
+export interface SpecialtyGridBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  source?: ('auto' | 'manual') | null;
+  /**
+   * Which taxonomy to list.
+   */
+  taxonomy?: ('specialties' | 'claim-types' | 'areas-of-expertise' | 'assessment-types') | null;
+  /**
+   * Icon cards, or an arrow checklist (e.g. "Claims We Support").
+   */
+  variant?: ('cards' | 'checklist') | null;
+  /**
+   * Cards per row. Not used by the arrow checklist, which is a single list.
+   */
+  columns?: ('2' | '3' | '4') | null;
+  /**
+   * Icon used for every specialty.
+   */
+  defaultIcon?: string | null;
+  linkToDirectory?: boolean | null;
+  /**
+   * Links become <path>?specialty=<slug>. Default: the Specialist Panel directory.
+   */
+  directoryPath?: string | null;
+  items?:
+    | {
+        /**
+         * Icon shown with this item.
+         */
+        icon?: string | null;
+        label: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        link: {
+          type?: ('reference' | 'custom' | 'enquiry') | null;
+          newTab?: boolean | null;
+          /**
+           * You can link to a draft. The link will 404 for visitors until that document is published.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'specialists';
+                value: number | Specialist;
+              } | null)
+            | ({
+                relationTo: 'team';
+                value: number | Team;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
+              } | null);
+          url?: string | null;
+          label: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          /**
+           * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+           */
+          anchor?: string | null;
+          /**
+           * Optional leading icon shown before the label.
+           */
+          icon?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Call-to-action shown on each linked card (only appears when the tile links somewhere).
+   */
+  ctaLabel?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Apply preset classes to specific parts of this block.
+   */
+  elementClasses?: {
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    heading?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    card?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    button?: string[] | null;
+  };
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  /**
+   * Hover effect for cards/items in this block.
+   */
+  hoverEffect?: ('none' | 'lift' | 'glow' | 'zoom' | 'accent-bar') | null;
+  /**
+   * Resting depth/glow for cards in this block. Edit what each preset looks like in Globals → Design System → Shadows & glows.
+   */
+  shadow?: ('default' | 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'glow' | 'glow-strong') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'specialtyGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PeopleGridBlock".
+ */
+export interface PeopleGridBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  /**
+   * Give the eyebrow/heading/intro their own coloured band above the rest of the block. Leave as "Same as the section" for one continuous band. The colours themselves come from Design System → Section bands.
+   */
+  headerBackground?:
+    | ('default' | 'white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero')
+    | null;
+  source?: ('specialists' | 'team' | 'manual') | null;
+  onlyAdvertised?: boolean | null;
+  featuredOnly?: boolean | null;
+  /**
+   * Optional — limit to one specialty.
+   */
+  specialty?: (number | null) | Specialty;
+  /**
+   * Optional — limit to one location.
+   */
+  location?: (number | null) | Location;
+  /**
+   * Optional — limit to specialists who perform this assessment type (set on their profile).
+   */
+  asmtType?: (number | null) | AssessmentType;
+  /**
+   * Optional — limit to one department.
+   */
+  department?: (number | null) | Department;
+  /**
+   * Render each department as its own labelled group (Meet the Team layout).
+   */
+  groupByDepartment?: boolean | null;
+  people?:
+    | (
+        | {
+            relationTo: 'specialists';
+            value: number | Specialist;
+          }
+        | {
+            relationTo: 'team';
+            value: number | Team;
+          }
+      )[]
+    | null;
+  layout?: ('grid' | 'carousel') | null;
+  /**
+   * Grid only.
+   */
+  columns?: ('2' | '3' | '4') | null;
+  /**
+   * Max people to show (0 = show all).
+   */
+  limit?: number | null;
+  /**
+   * Optional buttons shown below the grid (e.g. "View Full Panel").
+   */
+  footerLinks?:
+    | {
+        link: {
+          type?: ('reference' | 'custom' | 'enquiry') | null;
+          newTab?: boolean | null;
+          /**
+           * You can link to a draft. The link will 404 for visitors until that document is published.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'specialists';
+                value: number | Specialist;
+              } | null)
+            | ({
+                relationTo: 'team';
+                value: number | Team;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
+              } | null);
+          url?: string | null;
+          label: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          /**
+           * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+           */
+          anchor?: string | null;
+          /**
+           * Optional leading icon shown before the label.
+           */
+          icon?: string | null;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Enable once individual profile pages exist.
+   */
+  linkProfiles?: boolean | null;
+  /**
+   * Infinite auto-scrolling marquee (pauses on hover). Arrows flip the scroll direction.
+   */
+  carouselOptions?: {
+    /**
+     * Seconds for one full loop of the strip — NOT a per-card delay. Lower = faster. The design reference uses 60.
+     */
+    speed?: number | null;
+    direction?: ('left' | 'right') | null;
+    showArrows?: boolean | null;
+  };
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Apply preset classes to specific parts of this block.
+   */
+  elementClasses?: {
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    heading?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    card?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    button?: string[] | null;
+  };
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  /**
+   * Hover effect for cards/items in this block.
+   */
+  hoverEffect?: ('none' | 'lift' | 'glow' | 'zoom' | 'accent-bar') | null;
+  /**
+   * Resting depth/glow for cards in this block. Edit what each preset looks like in Globals → Design System → Shadows & glows.
+   */
+  shadow?: ('default' | 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'glow' | 'glow-strong') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'peopleGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ServicesGridBlock".
+ */
+export interface ServicesGridBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  source?: ('auto' | 'manual') | null;
+  /**
+   * Optional — limit to one category.
+   */
+  category?: ('medico-legal' | 'administrative' | 'educational') | null;
+  /**
+   * Optional — finer group (examinations vs reporting).
+   */
+  serviceGroup?: ('examination' | 'reporting' | 'administrative' | 'education') | null;
+  /**
+   * Card grid, or an expandable accordion (with per-service image + body).
+   */
+  layout?: ('grid' | 'accordion') | null;
+  services?: (number | Service)[] | null;
+  columns?: ('2' | '3' | '4') | null;
+  /**
+   * Max services to show (auto source).
+   */
+  limit?: number | null;
+  /**
+   * Enable once service pages exist.
+   */
+  linkToService?: boolean | null;
+  /**
+   * Adds an enquiry-drawer link at the bottom of every card (reference: Reports & Opinions / Administrative Services cards).
+   */
+  showEnquire?: boolean | null;
+  /**
+   * Reference home-page style: a tidy icon + title grid with no blurb.
+   */
+  hideDescription?: boolean | null;
+  /**
+   * Centred gives the reference home-page treatment — icon and title stacked and centred, with an equal minimum card height. Best paired with “Hide card descriptions”; a long blurb reads poorly centred.
+   */
+  cardAlign?: ('left' | 'center') | null;
+  /**
+   * Links become <prefix>/<slug>.
+   */
+  servicePathPrefix?: string | null;
+  /**
+   * Optional CTAs under the grid (e.g. "View Medico-Legal Services").
+   */
+  footerLinks?:
+    | {
+        link: {
+          type?: ('reference' | 'custom' | 'enquiry') | null;
+          newTab?: boolean | null;
+          /**
+           * You can link to a draft. The link will 404 for visitors until that document is published.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'specialists';
+                value: number | Specialist;
+              } | null)
+            | ({
+                relationTo: 'team';
+                value: number | Team;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
+              } | null);
+          url?: string | null;
+          label: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          /**
+           * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+           */
+          anchor?: string | null;
+          /**
+           * Optional leading icon shown before the label.
+           */
+          icon?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Apply preset classes to specific parts of this block.
+   */
+  elementClasses?: {
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    heading?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    card?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    button?: string[] | null;
+  };
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  /**
+   * Hover effect for cards/items in this block.
+   */
+  hoverEffect?: ('none' | 'lift' | 'glow' | 'zoom' | 'accent-bar') | null;
+  /**
+   * Resting depth/glow for cards in this block. Edit what each preset looks like in Globals → Design System → Shadows & glows.
+   */
+  shadow?: ('default' | 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'glow' | 'glow-strong') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'servicesGrid';
+}
+/**
+ * The service cards shown in Services grids. These are cards, not pages — each links to a page you choose under "Link override".
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: number;
+  title: string;
+  /**
+   * Groups the service (mirrors the contact form categories).
+   */
+  category: 'medico-legal' | 'administrative' | 'educational';
+  /**
+   * Finer grouping so grids can isolate examinations vs reporting within Medico-Legal.
+   */
+  serviceGroup?: ('examination' | 'reporting' | 'administrative' | 'education') | null;
+  /**
+   * Icon shown on the service card.
+   */
+  icon?: string | null;
+  /**
+   * Optional image for service cards / accordion rows.
+   */
+  photo?: (number | null) | Media;
+  /**
+   * Optional. Point the service card at a specific URL/anchor (e.g. /services/medico-legal/reporting-services#file-review) instead of the auto-generated service page.
+   */
+  linkOverride?: string | null;
+  /**
+   * Card blurb shown in grids (1–2 sentences).
+   */
+  shortDescription?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Full detail shown on the service page.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Highlight in featured listings.
+   */
+  featured?: boolean | null;
+  /**
+   * Lower numbers appear first.
+   */
+  order?: number | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TestimonialsGridBlock".
+ */
+export interface TestimonialsGridBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  source?: ('auto' | 'manual') | null;
+  featuredOnly?: boolean | null;
+  testimonials?: (number | Testimonial)[] | null;
+  layout?: ('grid' | 'carousel') | null;
+  columns?: ('2' | '3' | '4') | null;
+  /**
+   * Max testimonials to show (auto source).
+   */
+  limit?: number | null;
+  carouselOptions?: {
+    visible?: number | null;
+    showArrows?: boolean | null;
+  };
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Apply preset classes to specific parts of this block.
+   */
+  elementClasses?: {
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    heading?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    card?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    button?: string[] | null;
+  };
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  /**
+   * Hover effect for cards/items in this block.
+   */
+  hoverEffect?: ('none' | 'lift' | 'glow' | 'zoom' | 'accent-bar') | null;
+  /**
+   * Resting depth/glow for cards in this block. Edit what each preset looks like in Globals → Design System → Shadows & glows.
+   */
+  shadow?: ('default' | 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'glow' | 'glow-strong') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'testimonialsGrid';
+}
+/**
+ * Client quotes. They appear in one place: the testimonial carousel on the homepage.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: number;
+  /**
+   * The testimonial text (no surrounding quotation marks needed).
+   */
+  quote: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Line 1 of the attribution — the position, e.g. "Senior Associate".
+   */
+  authorRole: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Line 2 of the attribution, e.g. "Personal Injury Law Firm — Brisbane, QLD". Leave empty to show the position alone.
+   */
+  org?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Star rating (1–5).
+   */
+  rating?: number | null;
+  /**
+   * Lower numbers appear first.
+   */
+  order?: number | null;
+  /**
+   * Show in featured testimonial listings.
+   */
+  featured?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StatsBandBlock".
+ */
+export interface StatsBandBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  stats?:
+    | {
+        /**
+         * The number to count up to.
+         */
+        value: number;
+        /**
+         * e.g. "$" (optional).
+         */
+        prefix?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * e.g. "+" or "%" (optional).
+         */
+        suffix?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        label: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Apply preset classes to specific parts of this block.
+   */
+  elementClasses?: {
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    heading?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    card?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    button?: string[] | null;
+  };
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'statsBand';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TabsBlockType".
+ */
+export interface TabsBlockType {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  tabs?:
+    | {
+        label: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        /**
+         * Optional tab icon.
+         */
+        icon?: string | null;
+        /**
+         * Blocks shown when this tab is active (grids, steps, text, etc.).
+         */
+        content?:
+          | (
+              | AamleEducationBlock
+              | HeadingBlock
+              | TextBlock
+              | ButtonBlock
+              | ImageBlock
+              | SpacerBlock
+              | DividerBlock
+              | IconBlock
+              | ContentBlock
+              | MediaBlock
+              | CallToActionBlock
+              | FAQBlock
+              | GatewayCardsBlock
+              | FeatureGridBlock
+              | ProcessStepsBlock
+              | SpecialtyGridBlock
+              | PeopleGridBlock
+              | ServicesGridBlock
+              | TestimonialsGridBlock
+              | StatsBandBlock
+              | SplitFeatureBlock
+              | CTABandBlock
+            )[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  tabStyle?: ('pills' | 'underline') | null;
+  /**
+   * Index of the tab open by default (0 = first).
+   */
+  defaultTab?: number | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Apply preset classes to specific parts of this block.
+   */
+  elementClasses?: {
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    heading?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    card?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    button?: string[] | null;
+  };
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'tabs';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AamleEducationBlock".
+ */
+export interface AamleEducationBlock {
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  /**
+   * Small uppercase label above the wordmark.
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Large wordmark heading, e.g. "AAMLE".
+   */
+  wordmark?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Uppercase subheading under the wordmark.
+   */
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  badge?: {
+    /**
+     * Icon inside the pill badge.
+     */
+    icon?: string | null;
+    /**
+     * Pill badge text near the top.
+     */
+    text?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  /**
+   * Short intro paragraph under the badge. Bold is supported.
+   */
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Compact icon + label rows shown under the intro.
+   */
+  items?:
+    | {
+        /**
+         * Small icon for this row.
+         */
+        icon?: string | null;
+        label: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  link: {
+    type?: ('reference' | 'custom' | 'enquiry') | null;
+    newTab?: boolean | null;
+    /**
+     * You can link to a draft. The link will 404 for visitors until that document is published.
+     */
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null)
+      | ({
+          relationTo: 'specialists';
+          value: number | Specialist;
+        } | null)
+      | ({
+          relationTo: 'team';
+          value: number | Team;
+        } | null)
+      | ({
+          relationTo: 'events';
+          value: number | Event;
+        } | null);
+    url?: string | null;
+    label: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+    /**
+     * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+     */
+    anchor?: string | null;
+    /**
+     * Optional leading icon shown before the label.
+     */
+    icon?: string | null;
+  };
+  /**
+   * Right-column image. Leave empty to show a placeholder.
+   */
+  image?: (number | null) | Media;
+  /**
+   * Keeps the two-column layout (reference placeholder box) until a real image is uploaded.
+   */
+  imagePlaceholder?: boolean | null;
+  /**
+   * Caption shown inside the placeholder box.
+   */
+  placeholderLabel?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'aamleEducation';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SplitFeatureBlock".
+ */
+export interface SplitFeatureBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  /**
+   * “Divided” separates each row with a hairline rule instead of a gap — the Reporting Services treatment.
+   */
+  rowStyle?: ('spaced' | 'divided') | null;
+  /**
+   * “Compact” steps the whole section’s type down a size — heading, intro, row titles, body and bullets.
+   */
+  density?: ('default' | 'compact') | null;
+  /**
+   * Marker for bullets that have no icon of their own. A bullet with its own icon always keeps it.
+   */
+  bulletStyle?: ('check' | 'dot') | null;
+  /**
+   * Each row alternates image side automatically unless overridden.
+   */
+  rows?:
+    | {
+        image?: (number | null) | Media;
+        /**
+         * Keeps the two-column layout with a pale-blue placeholder tile until a real image is uploaded. Uploading an image above replaces the placeholder entirely — label and icon included — so you can leave this ticked.
+         */
+        imagePlaceholder?: boolean | null;
+        /**
+         * Optional caption inside the placeholder (e.g. "COMPANY PHOTO PLACEHOLDER").
+         */
+        placeholderLabel?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Optional glyph drawn above the placeholder caption.
+         */
+        placeholderIcon?: string | null;
+        imageSide?: ('auto' | 'left' | 'right') | null;
+        eyebrow?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Optional icon above the title.
+         */
+        icon?: string | null;
+        title: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        body?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Optional mini-heading above the bullets (e.g. "When to Request").
+         */
+        bulletsLabel?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        bullets?:
+          | {
+              text: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              };
+              /**
+               * Optional per-bullet icon.
+               */
+              icon?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        link?: {
+          type?: ('reference' | 'custom' | 'enquiry') | null;
+          newTab?: boolean | null;
+          /**
+           * You can link to a draft. The link will 404 for visitors until that document is published.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'specialists';
+                value: number | Specialist;
+              } | null)
+            | ({
+                relationTo: 'team';
+                value: number | Team;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
+              } | null);
+          url?: string | null;
+          label?: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          } | null;
+          /**
+           * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+           */
+          anchor?: string | null;
+          /**
+           * Optional leading icon shown before the label.
+           */
+          icon?: string | null;
+        };
+        /**
+         * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+         */
+        anchorId?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Weight of this section’s heading. “Heavy” is the bolder treatment used on Join the Expert Panel. Leave as “Default” to match the rest of the site.
+   */
+  headingWeight?: ('default' | 'heavy') | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Apply preset classes to specific parts of this block.
+   */
+  elementClasses?: {
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    heading?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    card?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    button?: string[] | null;
+  };
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'splitFeature';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTABandBlock".
+ */
+export interface CTABandBlock {
+  /**
+   * Small uppercase label above the heading (e.g. "Get Started").
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the accent colour.
+   */
+  heading: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  text?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  links?:
+    | {
+        link: {
+          type?: ('reference' | 'custom' | 'enquiry') | null;
+          newTab?: boolean | null;
+          /**
+           * You can link to a draft. The link will 404 for visitors until that document is published.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'specialists';
+                value: number | Specialist;
+              } | null)
+            | ({
+                relationTo: 'team';
+                value: number | Team;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
+              } | null);
+          url?: string | null;
+          label: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          /**
+           * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+           */
+          anchor?: string | null;
+          /**
+           * Optional leading icon shown before the label.
+           */
+          icon?: string | null;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Apply preset classes to specific parts of this block.
+   */
+  elementClasses?: {
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    heading?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    card?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    button?: string[] | null;
+  };
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'ctaBand';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CalloutBlock".
+ */
+export interface CalloutBlock {
+  style?: ('info' | 'note' | 'good-to-know' | 'reassurance' | 'success' | 'warning') | null;
+  /**
+   * Icon shown with this item.
+   */
+  icon?: string | null;
+  /**
+   * Optional pill label, e.g. "Good to know".
+   */
+  tag?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Callout links all render in the same style, so a link’s Appearance (Default/Outline) makes no difference here.
+   */
+  links?:
+    | {
+        link: {
+          type?: ('reference' | 'custom' | 'enquiry') | null;
+          newTab?: boolean | null;
+          /**
+           * You can link to a draft. The link will 404 for visitors until that document is published.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'specialists';
+                value: number | Specialist;
+              } | null)
+            | ({
+                relationTo: 'team';
+                value: number | Team;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
+              } | null);
+          url?: string | null;
+          label: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          /**
+           * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+           */
+          anchor?: string | null;
+          /**
+           * Optional leading icon shown before the label.
+           */
+          icon?: string | null;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'callout';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactDetailsBlock".
+ */
+export interface ContactDetailsBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Pull phone / email / address / hours from the Footer + Site Settings globals.
+   */
+  useGlobal?: boolean | null;
+  /**
+   * Manual override — each row is an icon + label + value (+ optional link/note).
+   */
+  items?:
+    | {
+        /**
+         * Icon shown with this item.
+         */
+        icon?: string | null;
+        label: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        value: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        /**
+         * Optional (tel:/mailto:/URL).
+         */
+        href?: string | null;
+        note?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contactDetails';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IconListBlock".
+ */
+export interface IconListBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Alignment of the eyebrow, heading and intro above the list.
+   */
+  headingAlign?: ('center' | 'left') | null;
+  columns?: ('1' | '2' | '3') | null;
+  items?:
+    | {
+        /**
+         * Icon shown with this item.
+         */
+        icon?: string | null;
+        text: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        /**
+         * Optional link for this item.
+         */
+        link?: {
+          /**
+           * Optional URL (leave empty for no link).
+           */
+          url?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'iconList';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MapEmbedBlock".
+ */
+export interface MapEmbedBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  kind?: ('map' | 'embed') | null;
+  /**
+   * Optional — pull the address + office info panel from an Office record.
+   */
+  office?: (number | null) | Office;
+  /**
+   * Map embed src, or a YouTube/Vimeo URL. Overrides the office map if set.
+   */
+  embedUrl?: string | null;
+  aspect?: ('16-9' | '4-3' | '1-1' | 'map') | null;
+  /**
+   * Accessible title.
+   */
+  title?: string | null;
+  showOfficeInfo?: boolean | null;
+  /**
+   * Info-panel heading above the office hours. Defaults to "Office Hours".
+   */
+  officeHoursHeading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Info-panel heading above the transport list. Defaults to "Recommended Public Transport".
+   */
+  transportHeading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Info-panel heading above the parking list. Defaults to "Nearby Car Parks".
+   */
+  parkingHeading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * e.g. Get directions / Call / Email. Each link’s Appearance (Default/Outline) applies on the standard map layout; the contact-details layout renders them all in one style.
+   */
+  actions?:
+    | {
+        link: {
+          type?: ('reference' | 'custom' | 'enquiry') | null;
+          newTab?: boolean | null;
+          /**
+           * You can link to a draft. The link will 404 for visitors until that document is published.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'specialists';
+                value: number | Specialist;
+              } | null)
+            | ({
+                relationTo: 'team';
+                value: number | Team;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
+              } | null);
+          url?: string | null;
+          label: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          /**
+           * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+           */
+          anchor?: string | null;
+          /**
+           * Optional leading icon shown before the label.
+           */
+          icon?: string | null;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mapEmbed';
+}
+/**
+ * Your office locations. The primary office fills the footer contact details and the "Where to Find Us" map on Contact and For Claimants.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "offices".
+ */
+export interface Office {
+  id: number;
+  /**
+   * e.g. "Brisbane (Head Office)".
+   */
+  title: string;
+  /**
+   * The office whose phone, email, address and hours the site falls back to — the footer and any "Use global contact details" block. Tick exactly one. Leave the matching Footer fields empty to follow this office; fill one in to override it there.
+   */
+  isPrimary?: boolean | null;
+  /**
+   * Full postal address (line breaks preserved).
+   */
+  address?: string | null;
+  /**
+   * Display phone, e.g. "07 3356 0469".
+   */
+  phone?: string | null;
+  email?: string | null;
+  /**
+   * The src URL from a Google Maps "Embed a map" iframe. Leave empty to derive from the address.
+   */
+  mapEmbedUrl?: string | null;
+  hours?:
+    | {
+        days?: string | null;
+        time?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional caveat, e.g. the 7:30am staffing note.
+   */
+  hoursNote?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  transport?:
+    | {
+        label: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        note?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        href?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  parking?:
+    | {
+        name: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        address?: string | null;
+        walkTime?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        heightLimit?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        href?: string | null;
+        note?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Any additional guidance shown in the location module. It reads as the last line of Nearby Car Parks — or, if this office lists no car parks, at the foot of the card.
+   */
+  note?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  order?: number | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LeadershipSpotlightBlock".
+ */
+export interface LeadershipSpotlightBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  /**
+   * Founder portrait. Falls back to a labelled placeholder when empty.
+   */
+  photo?: (number | null) | Media;
+  /**
+   * Icon shown in the photo placeholder when no portrait is set.
+   */
+  placeholderIcon?: string | null;
+  /**
+   * Name shown on the floating badge.
+   */
+  name?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Role line beneath the name on the badge.
+   */
+  role?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional small kicker above the name on the floating badge, e.g. "Founder".
+   */
+  badge?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Short italic pull-quote shown above the body copy.
+   */
+  tagline?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Credential pills, e.g. "25+ Years — Personal Injury Law".
+   */
+  credentials?:
+    | {
+        cred: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  link: {
+    type?: ('reference' | 'custom' | 'enquiry') | null;
+    newTab?: boolean | null;
+    /**
+     * You can link to a draft. The link will 404 for visitors until that document is published.
+     */
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null)
+      | ({
+          relationTo: 'specialists';
+          value: number | Specialist;
+        } | null)
+      | ({
+          relationTo: 'team';
+          value: number | Team;
+        } | null)
+      | ({
+          relationTo: 'events';
+          value: number | Event;
+        } | null);
+    url?: string | null;
+    label: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+    /**
+     * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+     */
+    anchor?: string | null;
+    /**
+     * Optional leading icon shown before the label.
+     */
+    icon?: string | null;
+  };
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Apply preset classes to specific parts of this block.
+   */
+  elementClasses?: {
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    heading?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    card?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    button?: string[] | null;
+  };
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'leadershipSpotlight';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PortalCtaBlock".
+ */
+export interface PortalCtaBlock {
+  /**
+   * Small uppercase label above the heading.
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the accent colour.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Feature tiles shown in the band (icon + label).
+   */
+  tiles?:
+    | {
+        /**
+         * Icon shown with this item.
+         */
+        icon?: string | null;
+        label: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Action buttons. The first renders solid white; the rest render outline-white.
+   */
+  links?:
+    | {
+        link: {
+          type?: ('reference' | 'custom' | 'enquiry') | null;
+          newTab?: boolean | null;
+          /**
+           * You can link to a draft. The link will 404 for visitors until that document is published.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'specialists';
+                value: number | Specialist;
+              } | null)
+            | ({
+                relationTo: 'team';
+                value: number | Team;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
+              } | null);
+          url?: string | null;
+          label: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          /**
+           * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+           */
+          anchor?: string | null;
+          /**
+           * Optional leading icon shown before the label.
+           */
+          icon?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'portalCta';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "VideoEmbedBlock".
+ */
+export interface VideoEmbedBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Where the video is hosted.
+   */
+  provider: 'youtube' | 'vimeo' | 'url';
+  /**
+   * Frame proportions.
+   */
+  aspect?: ('16:9' | '4:3') | null;
+  /**
+   * The video ID only, e.g. "YCd7aoYTD3Q" for youtube.com/watch?v=YCd7aoYTD3Q, or "76979871" for a Vimeo URL.
+   */
+  videoId?: string | null;
+  /**
+   * Full iframe src URL for the embed.
+   */
+  url?: string | null;
+  /**
+   * Describes the video for screen readers (iframe title). Falls back to the heading.
+   */
+  videoTitle?: string | null;
+  /**
+   * Optional caption shown beneath the video.
+   */
+  caption?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'videoEmbed';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TryBookingBlock".
+ */
+export interface TryBookingBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * The digits from the event’s TryBooking address — e.g. 1525708 for trybooking.com/1525708. Numbers only.
+   */
+  eventId: string;
+  /**
+   * TryBooking currently publishes one embeddable form type. Kept as a list so another can be added without a data migration.
+   */
+  widgetType?: 'landingPageEmbed' | null;
+  /**
+   * Shown as a button linking straight to TryBooking whenever the embedded form cannot load — so a visitor is never left looking at an empty space. Leave it as is unless you have a reason.
+   */
+  fallbackLabel?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'tryBooking';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FormBlock".
+ */
+export interface FormBlock {
+  form: number | Form;
+  enableIntro?: boolean | null;
+  introContent?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Card wraps the whole block — intro heading included — in a white panel with a soft shadow.
+   */
+  cardStyle?: ('none' | 'card') | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'formBlock';
+}
+/**
+ * The enquiry forms used across the site. A form’s Emails tab decides who is notified when someone submits it — check that before renaming a form.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms".
+ */
+export interface Form {
+  id: number;
+  title: string;
+  fields?:
+    | (
+        | {
+            name: string;
+            label?: string | null;
+            width?: number | null;
+            required?: boolean | null;
+            defaultValue?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'checkbox';
+          }
+        | {
+            name: string;
+            label?: string | null;
+            width?: number | null;
+            required?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'country';
+          }
+        | {
+            name: string;
+            label?: string | null;
+            width?: number | null;
+            required?: boolean | null;
+            /**
+             * Grey prompt shown inside the empty field, e.g. “you@company.com”.
+             */
+            placeholder?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'email';
+          }
+        | {
+            message?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'message';
+          }
+        | {
+            name: string;
+            label?: string | null;
+            width?: number | null;
+            defaultValue?: number | null;
+            required?: boolean | null;
+            /**
+             * Grey prompt shown inside the empty field, e.g. “you@company.com”.
+             */
+            placeholder?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'number';
+          }
+        | {
+            name: string;
+            label?: string | null;
+            width?: number | null;
+            defaultValue?: string | null;
+            placeholder?: string | null;
+            options?:
+              | {
+                  label: string;
+                  value: string;
+                  id?: string | null;
+                }[]
+              | null;
+            required?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'select';
+          }
+        | {
+            name: string;
+            label?: string | null;
+            width?: number | null;
+            required?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'state';
+          }
+        | {
+            name: string;
+            label?: string | null;
+            width?: number | null;
+            defaultValue?: string | null;
+            required?: boolean | null;
+            /**
+             * Grey prompt shown inside the empty field, e.g. “you@company.com”.
+             */
+            placeholder?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'text';
+          }
+        | {
+            name: string;
+            label?: string | null;
+            width?: number | null;
+            defaultValue?: string | null;
+            required?: boolean | null;
+            /**
+             * Grey prompt shown inside the empty field, e.g. “you@company.com”.
+             */
+            placeholder?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'textarea';
+          }
+      )[]
+    | null;
+  submitButtonLabel?: string | null;
+  /**
+   * Choose whether to display an on-page message or redirect to a different page after they submit the form.
+   */
+  confirmationType?: ('message' | 'redirect') | null;
+  confirmationMessage?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  redirect?: {
+    url: string;
+  };
+  /**
+   * Send custom emails when the form submits. Use comma separated lists to send the same email to multiple recipients. To reference a value from this form, wrap that field's name with double curly brackets, i.e. {{firstName}}. You can use a wildcard {{*}} to output all data and {{*:table}} to format it as an HTML table in the email.
+   */
+  emails?:
+    | {
+        emailTo?: string | null;
+        cc?: string | null;
+        bcc?: string | null;
+        replyTo?: string | null;
+        emailFrom?: string | null;
+        subject: string;
+        /**
+         * Enter the message that should be sent in this email.
+         */
+        message?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ArchiveBlock".
+ */
+export interface ArchiveBlock {
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  introContent?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  populateBy?: ('collection' | 'selection') | null;
+  relationTo?: ('posts' | 'events') | null;
+  /**
+   * Upcoming vs past is derived from each event date.
+   */
+  view?: ('upcoming' | 'past') | null;
+  categories?: (number | Category)[] | null;
+  /**
+   * Only show posts in this In-the-Loop stream.
+   */
+  stream?: (number | null) | Stream;
+  /**
+   * Only show posts flagged as featured.
+   */
+  featured?: boolean | null;
+  /**
+   * Article cards, or Staff-Narrative cards that show the author photo, name and role.
+   */
+  postStyle?: ('card' | 'narrative') | null;
+  /**
+   * Full event cards (Events list pages) or compact date-badge cards with CPD / cost status (In-the-Loop hub).
+   */
+  eventStyle?: ('card' | 'compact') | null;
+  limit?: number | null;
+  selectedDocs?:
+    | (
+        | {
+            relationTo: 'posts';
+            value: number | Post;
+          }
+        | {
+            relationTo: 'events';
+            value: number | Event;
+          }
+      )[]
+    | null;
+  columns?: ('2' | '3' | '4') | null;
+  /**
+   * Text for the per-card link (article & staff-narrative cards). Defaults to "Read More →".
+   */
+  readMoreLabel?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  viewAllLink?: {
+    link?: {
+      type?: ('reference' | 'custom' | 'enquiry') | null;
+      newTab?: boolean | null;
+      /**
+       * You can link to a draft. The link will 404 for visitors until that document is published.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'specialists';
+            value: number | Specialist;
+          } | null)
+        | ({
+            relationTo: 'team';
+            value: number | Team;
+          } | null)
+        | ({
+            relationTo: 'events';
+            value: number | Event;
+          } | null);
+      url?: string | null;
+      label?: {
+        root: {
+          type: string;
+          children: {
+            type: any;
+            version: number;
+            [k: string]: unknown;
+          }[];
+          direction: ('ltr' | 'rtl') | null;
+          format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+          indent: number;
+          version: number;
+        };
+        [k: string]: unknown;
+      } | null;
+      /**
+       * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+       */
+      anchor?: string | null;
+      /**
+       * Optional leading icon shown before the label.
+       */
+      icon?: string | null;
+    };
+  };
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * With nothing to list, hide the whole section — heading and all — instead of leaving an empty band. Its tab in a sticky Section Nav on the same page is hidden with it. Leave unticked to keep the empty section visible while you are still adding content.
+   */
+  hideWhenEmpty?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'archive';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AvailabilityBlock".
+ */
+export interface AvailabilityBlock {
+  /**
+   * Specialists with "Feature in availability carousel" (advertise) enabled.
+   */
+  showCarousel?: boolean | null;
+  showLegend?: boolean | null;
+  /**
+   * Overlays each specialist’s specialty as a pill on their carousel photo. Off by default — the specialty already appears beneath the photo.
+   */
+  showSpecialtyBadge?: boolean | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'availability';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SlideCarouselBlock".
+ */
+export interface SlideCarouselBlock {
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  heading: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  autoplay?: boolean | null;
+  interval?: number | null;
+  slides?:
+    | {
+        title: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        body?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        accent?: ('seminars' | 'insights' | 'networking' | 'sponsorships') | null;
+        /**
+         * Short word shown on the coloured panel (e.g. "Seminar").
+         */
+        visualLabel?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Optional. Fills the coloured panel when set.
+         */
+        image?: (number | null) | Media;
+        pills?:
+          | {
+              text: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Apply preset classes to specific parts of this block.
+   */
+  elementClasses?: {
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    heading?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    card?: string[] | null;
+    /**
+     * Pick styles defined in Globals → Custom Styles.
+     */
+    button?: string[] | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'slideCarousel';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SpecialistDirectoryBlock".
+ */
+export interface SpecialistDirectoryBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  enableSearch?: boolean | null;
+  enableSpecialty?: boolean | null;
+  enableLocation?: boolean | null;
+  enableAccreditation?: boolean | null;
+  /**
+   * Surname and Given name are alphabetical and fill in automatically from each specialist’s full name. Custom is the order you set by dragging rows on the Specialists list — dragging changes nothing here unless this is set to Custom. Note the drag order starts alphabetical by surname, so switching to Custom looks like nothing happened until you actually move someone.
+   */
+  sortBy?: ('order' | 'lastName' | 'firstName') | null;
+  searchPlaceholder?: string | null;
+  /**
+   * Use {count}.
+   */
+  countTemplate?: string | null;
+  /**
+   * Field label above the search box.
+   */
+  searchGroupLabel?: string | null;
+  /**
+   * Field label above the specialty filter.
+   */
+  specialtyGroupLabel?: string | null;
+  /**
+   * Field label above the accreditation filter.
+   */
+  accreditationGroupLabel?: string | null;
+  /**
+   * Field label above the location filter.
+   */
+  locationGroupLabel?: string | null;
+  specialtyLabel?: string | null;
+  locationLabel?: string | null;
+  accreditationLabel?: string | null;
+  emptyHeading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  emptyBody?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Ghost card button (links to the specialist profile).
+   */
+  cardCtaLabel?: string | null;
+  /**
+   * Solid card button label.
+   */
+  secondaryCtaLabel?: string | null;
+  /**
+   * Solid card button link (e.g. /contact).
+   */
+  secondaryCtaHref?: string | null;
+  /**
+   * Filter reset button label.
+   */
+  resetLabel?: string | null;
+  /**
+   * Eyebrow label shown above each card’s consulting locations.
+   */
+  locationsLabel?: string | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'specialistDirectory';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SpecialtyDirectoryBlock".
+ */
+export interface SpecialtyDirectoryBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  showFilterBar?: boolean | null;
+  /**
+   * List each specialty’s specialists inside the accordion.
+   */
+  showRosters?: boolean | null;
+  showKeyAreas?: boolean | null;
+  /**
+   * Label for the “all categories” filter tab.
+   */
+  allTabLabel?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Message shown when a category has no specialties.
+   */
+  emptyLabel?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'specialtyDirectory';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ResourcesGridBlock".
+ */
+export interface ResourcesGridBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  source?: ('auto' | 'manual') | null;
+  /**
+   * "Standard card" or "Resource card" (design-reference In-the-Loop .ni-resource-card — coloured header panel + body).
+   */
+  variant?: ('card' | 'ni-resource') | null;
+  /**
+   * Optional — limit to one audience.
+   */
+  audience?: ('clients' | 'claimants' | 'all') | null;
+  /**
+   * Optional — limit to one type.
+   */
+  resourceType?: ('checklist' | 'guide' | 'template' | 'fact-sheet') | null;
+  resources?: (number | Resource)[] | null;
+  columns?: ('2' | '3' | '4') | null;
+  /**
+   * Max resources (auto source).
+   */
+  limit?: number | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * With nothing to list, hide the whole section — heading and all — instead of leaving an empty band. Its tab in a sticky Section Nav on the same page is hidden with it. Leave unticked to keep the empty section visible while you are still adding content.
+   */
+  hideWhenEmpty?: boolean | null;
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  /**
+   * Hover effect for cards/items in this block.
+   */
+  hoverEffect?: ('none' | 'lift' | 'glow' | 'zoom' | 'accent-bar') | null;
+  /**
+   * Resting depth/glow for cards in this block. Edit what each preset looks like in Globals → Design System → Shadows & glows.
+   */
+  shadow?: ('default' | 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'glow' | 'glow-strong') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'resourcesGrid';
+}
+/**
+ * Downloadable guides and checklists. They appear in one place: the Resources section of the In the Loop hub.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resources".
+ */
+export interface Resource {
+  id: number;
+  title: string;
+  /**
+   * Icon shown on the resource card.
+   */
+  icon?: string | null;
+  resourceType?: ('checklist' | 'guide' | 'template' | 'fact-sheet') | null;
+  audience?: ('clients' | 'claimants' | 'all') | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Downloadable file (e.g. PDF). Leave empty to link out instead.
+   */
+  file?: (number | null) | Media;
+  /**
+   * Used when no file is uploaded — links the card to this URL instead.
+   */
+  externalUrl?: string | null;
+  /**
+   * e.g. "Download", "Read guide". Defaults to "Download" if empty.
+   */
+  ctaLabel?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Lower numbers appear first.
+   */
+  order?: number | null;
+  /**
+   * When enabled, the slug will auto-generate from the title field on save and autosave.
+   */
+  generateSlug?: boolean | null;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AppointmentGuideBlock".
+ */
+export interface AppointmentGuideBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Small uppercase label shown above the appointment-type toggle. Defaults to "Select your appointment type".
+   */
+  selectLabel?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * The top-level toggle (e.g. In-Person, Videolink).
+   */
+  types?:
+    | {
+        /**
+         * Icon shown with this item.
+         */
+        icon?: string | null;
+        label: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        sublabel?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+         */
+        anchorId?: string | null;
+        tabs?:
+          | {
+              /**
+               * Icon shown with this item.
+               */
+              icon?: string | null;
+              label: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              };
+              items?:
+                | {
+                    /**
+                     * Icon shown with this item.
+                     */
+                    icon?: string | null;
+                    heading: {
+                      root: {
+                        type: string;
+                        children: {
+                          type: any;
+                          version: number;
+                          [k: string]: unknown;
+                        }[];
+                        direction: ('ltr' | 'rtl') | null;
+                        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                        indent: number;
+                        version: number;
+                      };
+                      [k: string]: unknown;
+                    };
+                    body?: {
+                      root: {
+                        type: string;
+                        children: {
+                          type: any;
+                          version: number;
+                          [k: string]: unknown;
+                        }[];
+                        direction: ('ltr' | 'rtl') | null;
+                        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                        indent: number;
+                        version: number;
+                      };
+                      [k: string]: unknown;
+                    } | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              highlightCards?:
+                | {
+                    /**
+                     * Icon shown with this item.
+                     */
+                    icon?: string | null;
+                    title: {
+                      root: {
+                        type: string;
+                        children: {
+                          type: any;
+                          version: number;
+                          [k: string]: unknown;
+                        }[];
+                        direction: ('ltr' | 'rtl') | null;
+                        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                        indent: number;
+                        version: number;
+                      };
+                      [k: string]: unknown;
+                    };
+                    bullets?:
+                      | {
+                          text: {
+                            root: {
+                              type: string;
+                              children: {
+                                type: any;
+                                version: number;
+                                [k: string]: unknown;
+                              }[];
+                              direction: ('ltr' | 'rtl') | null;
+                              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                              indent: number;
+                              version: number;
+                            };
+                            [k: string]: unknown;
+                          };
+                          id?: string | null;
+                        }[]
+                      | null;
+                    id?: string | null;
+                  }[]
+                | null;
+              callout?: {
+                style?: ('info' | 'note' | 'warning') | null;
+                text?: {
+                  root: {
+                    type: string;
+                    children: {
+                      type: any;
+                      version: number;
+                      [k: string]: unknown;
+                    }[];
+                    direction: ('ltr' | 'rtl') | null;
+                    format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                    indent: number;
+                    version: number;
+                  };
+                  [k: string]: unknown;
+                } | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'appointmentGuide';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MissionPillarsBlock".
+ */
+export interface MissionPillarsBlock {
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Intro paragraph shown under the heading (optional).
+   */
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Each pillar is auto-numbered 01, 02, 03… in display order.
+   */
+  pillars?:
+    | {
+        text: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'missionPillars';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ValueCardsBlock".
+ */
+export interface ValueCardsBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  /**
+   * Value cards, rendered in a 3-column grid. Every second card (2nd, 4th, 6th) is tinted light blue automatically.
+   */
+  cards?:
+    | {
+        title: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        description?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'valueCards';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WhyVerifyBlock".
+ */
+export interface WhyVerifyBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Each reason renders as a +/− disclosure row: the title is always visible and the body expands on click.
+   */
+  items?:
+    | {
+        /**
+         * Optional icon for this reason (kept in markup for structure; hidden in the current light design).
+         */
+        icon?: string | null;
+        title: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        /**
+         * Shown when the row is expanded.
+         */
+        body?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Company image shown beside the reasons. Falls back to a gradient placeholder when empty.
+   */
+  image?: (number | null) | Media;
+  /**
+   * Text shown inside the image placeholder when no image is set.
+   */
+  placeholderLabel?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'whyVerify';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AudiencePathwaysBlock".
+ */
+export interface AudiencePathwaysBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  /**
+   * Two audience pathway cards shown side by side.
+   */
+  pathways?:
+    | {
+        /**
+         * Card treatment. "Client" = dark-blue header; "Claimant" = light-blue header.
+         */
+        variant?: ('client' | 'claimant') | null;
+        /**
+         * Small uppercase audience label, e.g. "For Clients".
+         */
+        eyebrow?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Card heading (h3).
+         */
+        title?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Short intro paragraph under the card heading.
+         */
+        description?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Numbered steps (numbers are added automatically).
+         */
+        steps?:
+          | {
+              /**
+               * Bold step lead-in.
+               */
+              title: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              };
+              /**
+               * Step detail text.
+               */
+              description?: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              } | null;
+              id?: string | null;
+            }[]
+          | null;
+        link: {
+          type?: ('reference' | 'custom' | 'enquiry') | null;
+          newTab?: boolean | null;
+          /**
+           * You can link to a draft. The link will 404 for visitors until that document is published.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'specialists';
+                value: number | Specialist;
+              } | null)
+            | ({
+                relationTo: 'team';
+                value: number | Team;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
+              } | null);
+          url?: string | null;
+          label: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          /**
+           * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+           */
+          anchor?: string | null;
+          /**
+           * Optional leading icon shown before the label.
+           */
+          icon?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * Content width for this section.
+   */
+  containerWidth?: ('normal' | 'narrow' | 'wide' | 'full') | null;
+  /**
+   * Animate the section in as it scrolls into view.
+   */
+  motion?: ('none' | 'fade-up' | 'fade-in' | 'zoom-in') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'audiencePathways';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BookingChooserBlock".
+ */
+export interface BookingChooserBlock {
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * Full-bleed chooser. Two halves split the band 50/50 (typically one light-blue and one dark-navy side); a single half fills the whole band and does not slide under the pointer.
+   */
+  halves?:
+    | {
+        /**
+         * Large icon — also drawn as the oversized faint watermark for depth.
+         */
+        icon?: string | null;
+        /**
+         * Panel colour treatment.
+         */
+        accent?: ('blue' | 'dark') | null;
+        /**
+         * Small uppercase label above the title, e.g. "Already Registered?".
+         */
+        eyebrow?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * Panel heading. Wrap a word/phrase in [[brackets]] to accent it.
+         */
+        title?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        description?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        /**
+         * One or two CTA buttons. Choose "Outline" appearance for a secondary button; the button icon renders as a trailing arrow.
+         */
+        links?:
+          | {
+              link: {
+                type?: ('reference' | 'custom' | 'enquiry' | 'portalEnquiry') | null;
+                newTab?: boolean | null;
+                /**
+                 * You can link to a draft. The link will 404 for visitors until that document is published.
+                 */
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null)
+                  | ({
+                      relationTo: 'specialists';
+                      value: number | Specialist;
+                    } | null)
+                  | ({
+                      relationTo: 'team';
+                      value: number | Team;
+                    } | null)
+                  | ({
+                      relationTo: 'events';
+                      value: number | Event;
+                    } | null);
+                url?: string | null;
+                label: {
+                  root: {
+                    type: string;
+                    children: {
+                      type: any;
+                      version: number;
+                      [k: string]: unknown;
+                    }[];
+                    direction: ('ltr' | 'rtl') | null;
+                    format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                    indent: number;
+                    version: number;
+                  };
+                  [k: string]: unknown;
+                };
+                /**
+                 * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+                 */
+                anchor?: string | null;
+                /**
+                 * Optional leading icon shown before the label.
+                 */
+                icon?: string | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Compact trims the panel padding and the watermark so the band sits at about the height of a page hero. Use it where the chooser is a signpost under a hero rather than the main event.
+   */
+  density?: ('default' | 'compact') | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'bookingChooser';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CostGridBlock".
+ */
+export interface CostGridBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Translucent cards on the dark band (e.g. cost-control tips or inclusions).
+   */
+  cards?:
+    | {
+        /**
+         * Icon shown with this item.
+         */
+        icon?: string | null;
+        title: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        description?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Trailing emphasis paragraph below the cards (supports links, e.g. terms & conditions).
+   */
+  note?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'costGrid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NewsletterBlock".
+ */
+export interface NewsletterBlock {
+  /**
+   * Where signups are stored. Create a form with a single "email" field under Forms, then choose it here — submissions appear under Form Submissions, and the form’s Emails tab controls who is notified. Leave this empty and the band will tell visitors that signups are unavailable rather than showing a subscribe box that discards their address.
+   */
+  form?: (number | null) | Form;
+  /**
+   * Small uppercase label above the heading.
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the accent colour, e.g. "Be the First to Know About [[VERIFY & AAMLE Updates]]".
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Supporting paragraph beneath the heading.
+   */
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Placeholder text inside the email input.
+   */
+  placeholder?: string | null;
+  /**
+   * Submit button label.
+   */
+  buttonLabel?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Small print shown below the form.
+   */
+  note?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'newsletter';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SectionNavBlock".
+ */
+export interface SectionNavBlock {
+  /**
+   * Each item links to and highlights a section on this page. Order = display order.
+   */
+  items?:
+    | {
+        /**
+         * The nav pill text, e.g. "News & Updates".
+         */
+        label: string;
+        /**
+         * The anchor ID of the section this jumps to (without the #). Must match that section's Anchor ID. Lowercase letters, numbers and hyphens only.
+         */
+        anchorId: string;
+        id?: string | null;
+      }[]
+    | null;
+  sticky?: boolean | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'sectionNav';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeaturedArticlesBlock".
+ */
+export interface FeaturedArticlesBlock {
+  /**
+   * Small uppercase label above the carousel (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  autoplay?: boolean | null;
+  /**
+   * Milliseconds each slide is shown. The design reference uses 5000.
+   */
+  interval?: number | null;
+  showArrows?: boolean | null;
+  showDots?: boolean | null;
+  /**
+   * Auto: newest featured posts (checkbox "Featured" or the Featured stream). Manual: hand-pick posts below.
+   */
+  source?: ('auto' | 'manual') | null;
+  /**
+   * The posts to show in the carousel, in order.
+   */
+  posts?: (number | Post)[] | null;
+  /**
+   * Max number of posts to show (automatic mode).
+   */
+  limit?: number | null;
+  /**
+   * Text of the small badge shown on each slide (defaults to "Featured").
+   */
+  badgeLabel?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Prefix shown before the author/date byline on each slide (defaults to "By:").
+   */
+  bylinePrefix?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Text of the "read more" call-to-action link on each slide (defaults to "Read Full Article →").
+   */
+  ctaLabel?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  /**
+   * With nothing to list, hide the whole section — heading and all — instead of leaving an empty band. Its tab in a sticky Section Nav on the same page is hidden with it. Leave unticked to keep the empty section visible while you are still adding content.
+   */
+  hideWhenEmpty?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featuredArticles';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EventsExplorerBlock".
+ */
+export interface EventsExplorerBlock {
+  /**
+   * Small uppercase label above the heading (optional).
+   */
+  eyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word/phrase in [[brackets]] to highlight it in the brand accent colour, e.g. "Meet Our [[Expert Panel]]". Press Enter to start a new line of the same heading.
+   */
+  heading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  subheading?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Colours the heading and subheading above — not the cards or list items below them. To colour those, select the words and use the colour swatch in that field’s own toolbar. Brand colours follow Site Settings, so a rebrand updates them everywhere. A phrase in [[double brackets]] keeps the accent colour. The two “Follows the band” choices are the colours the text already is on a light background — they only differ once the band is dark.
+   */
+  textColour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Show upcoming and past, or restrict to one. The split uses the visitor’s current date.
+   */
+  mode?: ('all' | 'upcoming-only' | 'past-only') | null;
+  /**
+   * How many events show before pagination.
+   */
+  pageSize?: number | null;
+  showSearch?: boolean | null;
+  /**
+   * List rows suit a dedicated listing page. Cards suit a hub or overview, and show each event’s image.
+   */
+  cardStyle?: ('list' | 'card') | null;
+  /**
+   * Shown above each group when the Cards presentation is used. Wrap part of a heading in [[double brackets]] to tint it with the brand colour.
+   */
+  groups?: {
+    upcomingEyebrow?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    upcomingHeading?: string | null;
+    upcomingIntro?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    upcomingLinkLabel?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    upcomingLinkUrl?: string | null;
+    pastEyebrow?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    pastHeading?: string | null;
+    pastIntro?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    pastLinkLabel?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    pastLinkUrl?: string | null;
+  };
+  /**
+   * How the two groups are told apart. Both are off by default, which is exactly how this block rendered before they existed. Only shown in “Upcoming & Past” mode — with one group there is nothing to separate.
+   */
+  separator?: {
+    /**
+     * A rule drawn between the two groups, aligned with the content.
+     */
+    divider?: ('none' | 'line' | 'dots' | 'gradient') | null;
+    dividerWidth?: ('full' | 'narrow') | null;
+    /**
+     * Give the Past group its own full-width coloured band, which is how the design reference separates the two. “Pale blue” is its treatment. The colours come from Design System → Section bands.
+     */
+    pastBackground?:
+      | ('default' | 'white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero')
+      | null;
+  };
+  /**
+   * Editable UI text for this block — buttons, group headings, the search bar and empty-state messages. Leave a field blank to use its default.
+   */
+  labels?: {
+    /**
+     * Button on each upcoming event. Default: “More Info”.
+     */
+    moreInfoLabel?: string | null;
+    /**
+     * Button on each past event. Default: “View Recap”.
+     */
+    viewRecapLabel?: string | null;
+    /**
+     * Heading above the upcoming list (shown only in “Upcoming & Past” mode). Default: “Upcoming Events”.
+     */
+    upcomingHeading?: string | null;
+    /**
+     * Heading above the past list (shown only in “Upcoming & Past” mode). Default: “Past Events”.
+     */
+    pastHeading?: string | null;
+    /**
+     * Message when there are no upcoming events. Default: “No upcoming events are listed right now — please check back soon.”.
+     */
+    emptyUpcoming?: string | null;
+    /**
+     * Message when a search matches no upcoming events. Default: “No upcoming events match your search.”.
+     */
+    emptyUpcomingSearch?: string | null;
+    /**
+     * Message when there are no past events. Default: “No past events to show yet.”.
+     */
+    emptyPast?: string | null;
+    /**
+     * Message when a search matches no past events. Default: “No past events match your search.”.
+     */
+    emptyPastSearch?: string | null;
+    /**
+     * Shown briefly while events load in the browser. Default: “Loading events…”.
+     */
+    loadingLabel?: string | null;
+    /**
+     * Placeholder in the search box. Default: “Search”.
+     */
+    searchPlaceholder?: string | null;
+    /**
+     * Label on the (decorative) dates control in the filter bar. Default: “Dates”.
+     */
+    datesLabel?: string | null;
+    /**
+     * Text on the filter bar’s submit button. Default: “Search”.
+     */
+    searchButtonLabel?: string | null;
+  };
+  /**
+   * Optional #id for in-page / nav links, e.g. "file-review" is targeted by a link to #file-review. Lowercase letters, numbers and hyphens only.
+   */
+  anchorId?: string | null;
+  /**
+   * Section background colour.
+   */
+  background?: ('white' | 'muted' | 'accent' | 'accent-solid' | 'light' | 'primary' | 'dark' | 'hero') | null;
+  /**
+   * Pick styles defined in Globals → Custom Styles.
+   */
+  cssClass?: string[] | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'eventsExplorer';
+}
+/**
+ * Advertised appointment slots. Each belongs to a specialist and stops showing after its "Advertise until" date.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "availability-sessions".
+ */
+export interface AvailabilitySession {
+  id: number;
+  specialist: number | Specialist;
+  /**
+   * The day of availability.
+   */
+  date: string;
+  startTime: string;
+  endTime: string;
+  mode: 'in-person' | 'telehealth' | 'either';
+  /**
+   * Staff only. Never shown on the website and never sent in the enquiry email.
+   */
+  notes?: string | null;
+  /**
+   * Set to "Booked" to hide a slot once it is taken (removed manually).
+   */
+  status: 'available' | 'booked';
+  /**
+   * Stops advertising after this date. Defaults to the end of the month.
+   */
+  expiresAt: string;
+  title?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Your own icons, offered in every icon picker alongside the built-in ones. Upload a single-colour SVG — its own colours are ignored, because the site paints it to match whatever it sits on.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "icons".
+ */
+export interface Icon {
+  id: number;
+  /**
+   * What this icon is called in the picker, e.g. "Verify shield".
+   */
+  name: string;
+  /**
+   * Leave as "Follows the band" and the icon takes the colour of the text beside it, turning white on dark bands. Any placement can override this.
+   */
+  colour?:
+    | (
+        | 'inherit'
+        | 'brand'
+        | 'deep'
+        | 'linkblue'
+        | 'bright'
+        | 'definition'
+        | 'sky'
+        | 'muted'
+        | 'black'
+        | 'charcoal'
+        | 'grey'
+        | 'white'
+        | 'success'
+        | 'warning'
+        | 'error'
+        | 'heading'
+        | 'body'
+      )
+    | null;
+  /**
+   * Read from the uploaded file.
+   */
+  viewBox?: string | null;
+  /**
+   * The shape data kept from the uploaded file. Rebuilt on every upload — colours, scripts and anything else are dropped.
+   */
+  markup?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -158,6 +10082,96 @@ export interface Media {
   filesize?: number | null;
   width?: number | null;
   height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * Sends an old web address to a new one. Add a redirect whenever you change a page’s slug or parent, so existing links keep working.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "redirects".
+ */
+export interface Redirect {
+  id: number;
+  /**
+   * You will need to rebuild the website when changing this field.
+   */
+  from: string;
+  to?: {
+    type?: ('reference' | 'custom') | null;
+    reference?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null);
+    url?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Every enquiry a visitor has submitted, newest first. Read-only — this is the record of what came in.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-submissions".
+ */
+export interface FormSubmission {
+  id: number;
+  form: number | Form;
+  submissionData?:
+    | {
+        field: string;
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Built automatically so the site search can find articles, specialists and events. Nothing here is edited by hand — it rewrites itself when you save one of those.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "search".
+ */
+export interface Search {
+  id: number;
+  title?: string | null;
+  priority?: number | null;
+  doc:
+    | {
+        relationTo: 'posts';
+        value: number | Post;
+      }
+    | {
+        relationTo: 'specialists';
+        value: number | Specialist;
+      }
+    | {
+        relationTo: 'events';
+        value: number | Event;
+      };
+  slug?: string | null;
+  uri?: string | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    image?: (number | null) | Media;
+  };
+  categories?:
+    | {
+        relationTo?: string | null;
+        categoryID?: string | null;
+        title?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -178,18 +10192,218 @@ export interface PayloadKv {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs".
+ */
+export interface PayloadJob {
+  id: number;
+  /**
+   * Input data provided to the job
+   */
+  input?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taskStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  completedAt?: string | null;
+  totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
+  hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
+  error?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Task execution log
+   */
+  log?:
+    | {
+        executedAt: string;
+        completedAt: string;
+        taskSlug: 'inline' | 'schedulePublish';
+        taskID: string;
+        input?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        state: 'failed' | 'succeeded';
+        error?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  taskSlug?: ('inline' | 'schedulePublish') | null;
+  queue?: string | null;
+  waitUntil?: string | null;
+  processing?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: number | User;
+        relationTo: 'pages';
+        value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'posts';
+        value: number | Post;
+      } | null)
+    | ({
+        relationTo: 'events';
+        value: number | Event;
+      } | null)
+    | ({
+        relationTo: 'services';
+        value: number | Service;
+      } | null)
+    | ({
+        relationTo: 'resources';
+        value: number | Resource;
+      } | null)
+    | ({
+        relationTo: 'offices';
+        value: number | Office;
+      } | null)
+    | ({
+        relationTo: 'testimonials';
+        value: number | Testimonial;
+      } | null)
+    | ({
+        relationTo: 'specialties';
+        value: number | Specialty;
+      } | null)
+    | ({
+        relationTo: 'specialty-categories';
+        value: number | SpecialtyCategory;
+      } | null)
+    | ({
+        relationTo: 'claim-types';
+        value: number | ClaimType;
+      } | null)
+    | ({
+        relationTo: 'assessment-types';
+        value: number | AssessmentType;
+      } | null)
+    | ({
+        relationTo: 'event-types';
+        value: number | EventType;
+      } | null)
+    | ({
+        relationTo: 'areas-of-expertise';
+        value: number | AreasOfExpertise;
+      } | null)
+    | ({
+        relationTo: 'accreditations';
+        value: number | Accreditation;
+      } | null)
+    | ({
+        relationTo: 'locations';
+        value: number | Location;
+      } | null)
+    | ({
+        relationTo: 'streams';
+        value: number | Stream;
+      } | null)
+    | ({
+        relationTo: 'categories';
+        value: number | Category;
+      } | null)
+    | ({
+        relationTo: 'departments';
+        value: number | Department;
+      } | null)
+    | ({
+        relationTo: 'specialists';
+        value: number | Specialist;
+      } | null)
+    | ({
+        relationTo: 'team';
+        value: number | Team;
+      } | null)
+    | ({
+        relationTo: 'availability-sessions';
+        value: number | AvailabilitySession;
       } | null)
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'icons';
+        value: number | Icon;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
+      } | null)
+    | ({
+        relationTo: 'redirects';
+        value: number | Redirect;
+      } | null)
+    | ({
+        relationTo: 'forms';
+        value: number | Form;
+      } | null)
+    | ({
+        relationTo: 'form-submissions';
+        value: number | FormSubmission;
+      } | null)
+    | ({
+        relationTo: 'search';
+        value: number | Search;
+      } | null)
+    | ({
+        relationTo: 'payload-folders';
+        value: number | FolderInterface;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -235,9 +10449,2445 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  hero?:
+    | T
+    | {
+        type?: T;
+        eyebrow?: T;
+        heading?: T;
+        subtitle?: T;
+        showBreadcrumb?: T;
+        theme?: T;
+        align?: T;
+        showShield?: T;
+        imagePanel?: T;
+        imagePanelLabel?: T;
+        metaItems?:
+          | T
+          | {
+              icon?: T;
+              text?: T;
+              href?: T;
+              id?: T;
+            };
+        heroBackground?: T;
+        containerWidth?: T;
+        heroPaddingTop?: T;
+        heroPaddingBottom?: T;
+        definition?:
+          | T
+          | {
+              term?: T;
+              pronunciation?: T;
+              text?: T;
+              definitionStyle?: T;
+              interaction?: T;
+            };
+        richText?: T;
+        links?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                    anchor?: T;
+                    icon?: T;
+                    appearance?: T;
+                  };
+              id?: T;
+            };
+        media?: T;
+        cssClass?: T;
+      };
+  layout?:
+    | T
+    | {
+        section?: T | SectionBlockSelect<T>;
+        row?: T | RowBlockSelect<T>;
+        cta?: T | CallToActionBlockSelect<T>;
+        content?: T | ContentBlockSelect<T>;
+        mediaBlock?: T | MediaBlockSelect<T>;
+        archive?: T | ArchiveBlockSelect<T>;
+        formBlock?: T | FormBlockSelect<T>;
+        faq?: T | FAQBlockSelect<T>;
+        gatewayCards?: T | GatewayCardsBlockSelect<T>;
+        featureGrid?: T | FeatureGridBlockSelect<T>;
+        statsBand?: T | StatsBandBlockSelect<T>;
+        processSteps?: T | ProcessStepsBlockSelect<T>;
+        tabs?: T | TabsBlockTypeSelect<T>;
+        splitFeature?: T | SplitFeatureBlockSelect<T>;
+        ctaBand?: T | CTABandBlockSelect<T>;
+        specialtyGrid?: T | SpecialtyGridBlockSelect<T>;
+        peopleGrid?: T | PeopleGridBlockSelect<T>;
+        servicesGrid?: T | ServicesGridBlockSelect<T>;
+        testimonialsGrid?: T | TestimonialsGridBlockSelect<T>;
+        availability?: T | AvailabilityBlockSelect<T>;
+        slideCarousel?: T | SlideCarouselBlockSelect<T>;
+        specialistDirectory?: T | SpecialistDirectoryBlockSelect<T>;
+        specialtyDirectory?: T | SpecialtyDirectoryBlockSelect<T>;
+        resourcesGrid?: T | ResourcesGridBlockSelect<T>;
+        appointmentGuide?: T | AppointmentGuideBlockSelect<T>;
+        mapEmbed?: T | MapEmbedBlockSelect<T>;
+        contactDetails?: T | ContactDetailsBlockSelect<T>;
+        iconList?: T | IconListBlockSelect<T>;
+        callout?: T | CalloutBlockSelect<T>;
+        aamleEducation?: T | AamleEducationBlockSelect<T>;
+        missionPillars?: T | MissionPillarsBlockSelect<T>;
+        valueCards?: T | ValueCardsBlockSelect<T>;
+        whyVerify?: T | WhyVerifyBlockSelect<T>;
+        leadershipSpotlight?: T | LeadershipSpotlightBlockSelect<T>;
+        audiencePathways?: T | AudiencePathwaysBlockSelect<T>;
+        bookingChooser?: T | BookingChooserBlockSelect<T>;
+        costGrid?: T | CostGridBlockSelect<T>;
+        portalCta?: T | PortalCtaBlockSelect<T>;
+        newsletter?: T | NewsletterBlockSelect<T>;
+        videoEmbed?: T | VideoEmbedBlockSelect<T>;
+        tryBooking?: T | TryBookingBlockSelect<T>;
+        sectionNav?: T | SectionNavBlockSelect<T>;
+        featuredArticles?: T | FeaturedArticlesBlockSelect<T>;
+        eventsExplorer?: T | EventsExplorerBlockSelect<T>;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  publishedAt?: T;
+  cssClass?: T;
+  generateSlug?: T;
+  slug?: T;
+  parent?: T;
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SectionBlock_select".
+ */
+export interface SectionBlockSelect<T extends boolean = true> {
+  background?: T;
+  containerWidth?: T;
+  paddingTop?: T;
+  paddingBottom?: T;
+  motion?: T;
+  align?: T;
+  content?:
+    | T
+    | {
+        row?: T | RowBlockSelect<T>;
+        heading?: T | HeadingBlockSelect<T>;
+        text?: T | TextBlockSelect<T>;
+        button?: T | ButtonBlockSelect<T>;
+        image?: T | ImageBlockSelect<T>;
+        spacer?: T | SpacerBlockSelect<T>;
+        divider?: T | DividerBlockSelect<T>;
+        iconBlock?: T | IconBlockSelect<T>;
+        content?: T | ContentBlockSelect<T>;
+        mediaBlock?: T | MediaBlockSelect<T>;
+        cta?: T | CallToActionBlockSelect<T>;
+        faq?: T | FAQBlockSelect<T>;
+        gatewayCards?: T | GatewayCardsBlockSelect<T>;
+        featureGrid?: T | FeatureGridBlockSelect<T>;
+        processSteps?: T | ProcessStepsBlockSelect<T>;
+        specialtyGrid?: T | SpecialtyGridBlockSelect<T>;
+        peopleGrid?: T | PeopleGridBlockSelect<T>;
+        servicesGrid?: T | ServicesGridBlockSelect<T>;
+        testimonialsGrid?: T | TestimonialsGridBlockSelect<T>;
+        statsBand?: T | StatsBandBlockSelect<T>;
+        tabs?: T | TabsBlockTypeSelect<T>;
+        splitFeature?: T | SplitFeatureBlockSelect<T>;
+        ctaBand?: T | CTABandBlockSelect<T>;
+        callout?: T | CalloutBlockSelect<T>;
+        contactDetails?: T | ContactDetailsBlockSelect<T>;
+        iconList?: T | IconListBlockSelect<T>;
+        mapEmbed?: T | MapEmbedBlockSelect<T>;
+        leadershipSpotlight?: T | LeadershipSpotlightBlockSelect<T>;
+        portalCta?: T | PortalCtaBlockSelect<T>;
+        videoEmbed?: T | VideoEmbedBlockSelect<T>;
+        tryBooking?: T | TryBookingBlockSelect<T>;
+        formBlock?: T | FormBlockSelect<T>;
+      };
+  cssClass?: T;
+  anchorId?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RowBlock_select".
+ */
+export interface RowBlockSelect<T extends boolean = true> {
+  gap?: T;
+  alignY?: T;
+  columnRatio?: T;
+  columns?:
+    | T
+    | {
+        span?: T;
+        align?: T;
+        content?:
+          | T
+          | {
+              heading?: T | HeadingBlockSelect<T>;
+              text?: T | TextBlockSelect<T>;
+              button?: T | ButtonBlockSelect<T>;
+              image?: T | ImageBlockSelect<T>;
+              spacer?: T | SpacerBlockSelect<T>;
+              divider?: T | DividerBlockSelect<T>;
+              iconBlock?: T | IconBlockSelect<T>;
+              content?: T | ContentBlockSelect<T>;
+              mediaBlock?: T | MediaBlockSelect<T>;
+              cta?: T | CallToActionBlockSelect<T>;
+              faq?: T | FAQBlockSelect<T>;
+              gatewayCards?: T | GatewayCardsBlockSelect<T>;
+              featureGrid?: T | FeatureGridBlockSelect<T>;
+              processSteps?: T | ProcessStepsBlockSelect<T>;
+              specialtyGrid?: T | SpecialtyGridBlockSelect<T>;
+              peopleGrid?: T | PeopleGridBlockSelect<T>;
+              servicesGrid?: T | ServicesGridBlockSelect<T>;
+              testimonialsGrid?: T | TestimonialsGridBlockSelect<T>;
+              statsBand?: T | StatsBandBlockSelect<T>;
+              tabs?: T | TabsBlockTypeSelect<T>;
+              splitFeature?: T | SplitFeatureBlockSelect<T>;
+              ctaBand?: T | CTABandBlockSelect<T>;
+              callout?: T | CalloutBlockSelect<T>;
+              contactDetails?: T | ContactDetailsBlockSelect<T>;
+              iconList?: T | IconListBlockSelect<T>;
+              mapEmbed?: T | MapEmbedBlockSelect<T>;
+              leadershipSpotlight?: T | LeadershipSpotlightBlockSelect<T>;
+              portalCta?: T | PortalCtaBlockSelect<T>;
+              videoEmbed?: T | VideoEmbedBlockSelect<T>;
+              tryBooking?: T | TryBookingBlockSelect<T>;
+              formBlock?: T | FormBlockSelect<T>;
+            };
+        id?: T;
+      };
+  cssClass?: T;
+  anchorId?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeadingBlock_select".
+ */
+export interface HeadingBlockSelect<T extends boolean = true> {
+  text?: T;
+  level?: T;
+  size?: T;
+  align?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TextBlock_select".
+ */
+export interface TextBlockSelect<T extends boolean = true> {
+  richText?: T;
+  size?: T;
+  align?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ButtonBlock_select".
+ */
+export interface ButtonBlockSelect<T extends boolean = true> {
+  links?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  size?: T;
+  align?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageBlock_select".
+ */
+export interface ImageBlockSelect<T extends boolean = true> {
+  media?: T;
+  width?: T;
+  rounded?: T;
+  shadow?: T;
+  align?: T;
+  caption?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SpacerBlock_select".
+ */
+export interface SpacerBlockSelect<T extends boolean = true> {
+  size?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DividerBlock_select".
+ */
+export interface DividerBlockSelect<T extends boolean = true> {
+  style?: T;
+  width?: T;
+  align?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IconBlock_select".
+ */
+export interface IconBlockSelect<T extends boolean = true> {
+  icon?: T;
+  size?: T;
+  color?: T;
+  align?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContentBlock_select".
+ */
+export interface ContentBlockSelect<T extends boolean = true> {
+  columns?:
+    | T
+    | {
+        size?: T;
+        richText?: T;
+        enableLink?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaBlock_select".
+ */
+export interface MediaBlockSelect<T extends boolean = true> {
+  media?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CallToActionBlock_select".
+ */
+export interface CallToActionBlockSelect<T extends boolean = true> {
+  richText?: T;
+  links?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FAQBlock_select".
+ */
+export interface FAQBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  columns?: T;
+  itemStyle?: T;
+  toggleStyle?: T;
+  iconStyle?: T;
+  density?: T;
+  containerWidth?: T;
+  ruleStyle?: T;
+  items?:
+    | T
+    | {
+        question?: T;
+        icon?: T;
+        image?: T;
+        answer?: T;
+        anchorId?: T;
+        id?: T;
+      };
+  exclusive?: T;
+  openFirst?: T;
+  helpCard?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        email?: T;
+        phone?: T;
+      };
+  anchorId?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GatewayCardsBlock_select".
+ */
+export interface GatewayCardsBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  background?: T;
+  columns?: T;
+  cards?:
+    | T
+    | {
+        icon?: T;
+        eyebrow?: T;
+        subtitle?: T;
+        title?: T;
+        description?: T;
+        accent?: T;
+        theme?: T;
+        links?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                    anchor?: T;
+                    icon?: T;
+                  };
+              id?: T;
+            };
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  cssClass?: T;
+  elementClasses?:
+    | T
+    | {
+        heading?: T;
+        card?: T;
+        button?: T;
+      };
+  containerWidth?: T;
+  motion?: T;
+  hoverEffect?: T;
+  shadow?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeatureGridBlock_select".
+ */
+export interface FeatureGridBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  background?: T;
+  columns?: T;
+  cardStyle?: T;
+  items?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        titleSuffix?: T;
+        description?: T;
+        bullets?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        detailsLabel?: T;
+        details?:
+          | T
+          | {
+              icon?: T;
+              title?: T;
+              description?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  headingWeight?: T;
+  cssClass?: T;
+  elementClasses?:
+    | T
+    | {
+        heading?: T;
+        card?: T;
+        button?: T;
+      };
+  containerWidth?: T;
+  motion?: T;
+  hoverEffect?: T;
+  shadow?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ProcessStepsBlock_select".
+ */
+export interface ProcessStepsBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  background?: T;
+  variant?: T;
+  numberStyle?: T;
+  introRich?: T;
+  image?: T;
+  imagePlaceholder?: T;
+  placeholderLabel?: T;
+  placeholderIcon?: T;
+  columns?: T;
+  steps?:
+    | T
+    | {
+        icon?: T;
+        badge?: T;
+        badgeStyle?: T;
+        title?: T;
+        description?: T;
+        bullets?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  anchorId?: T;
+  cssClass?: T;
+  elementClasses?:
+    | T
+    | {
+        heading?: T;
+        card?: T;
+        button?: T;
+      };
+  containerWidth?: T;
+  motion?: T;
+  hoverEffect?: T;
+  shadow?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SpecialtyGridBlock_select".
+ */
+export interface SpecialtyGridBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  background?: T;
+  source?: T;
+  taxonomy?: T;
+  variant?: T;
+  columns?: T;
+  defaultIcon?: T;
+  linkToDirectory?: T;
+  directoryPath?: T;
+  items?:
+    | T
+    | {
+        icon?: T;
+        label?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+            };
+        id?: T;
+      };
+  ctaLabel?: T;
+  cssClass?: T;
+  elementClasses?:
+    | T
+    | {
+        heading?: T;
+        card?: T;
+        button?: T;
+      };
+  containerWidth?: T;
+  motion?: T;
+  hoverEffect?: T;
+  shadow?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PeopleGridBlock_select".
+ */
+export interface PeopleGridBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  background?: T;
+  headerBackground?: T;
+  source?: T;
+  onlyAdvertised?: T;
+  featuredOnly?: T;
+  specialty?: T;
+  location?: T;
+  asmtType?: T;
+  department?: T;
+  groupByDepartment?: T;
+  people?: T;
+  layout?: T;
+  columns?: T;
+  limit?: T;
+  footerLinks?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  linkProfiles?: T;
+  carouselOptions?:
+    | T
+    | {
+        speed?: T;
+        direction?: T;
+        showArrows?: T;
+      };
+  cssClass?: T;
+  elementClasses?:
+    | T
+    | {
+        heading?: T;
+        card?: T;
+        button?: T;
+      };
+  containerWidth?: T;
+  motion?: T;
+  hoverEffect?: T;
+  shadow?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ServicesGridBlock_select".
+ */
+export interface ServicesGridBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  background?: T;
+  source?: T;
+  category?: T;
+  serviceGroup?: T;
+  layout?: T;
+  services?: T;
+  columns?: T;
+  limit?: T;
+  linkToService?: T;
+  showEnquire?: T;
+  hideDescription?: T;
+  cardAlign?: T;
+  servicePathPrefix?: T;
+  footerLinks?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+            };
+        id?: T;
+      };
+  anchorId?: T;
+  cssClass?: T;
+  elementClasses?:
+    | T
+    | {
+        heading?: T;
+        card?: T;
+        button?: T;
+      };
+  containerWidth?: T;
+  motion?: T;
+  hoverEffect?: T;
+  shadow?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TestimonialsGridBlock_select".
+ */
+export interface TestimonialsGridBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  background?: T;
+  source?: T;
+  featuredOnly?: T;
+  testimonials?: T;
+  layout?: T;
+  columns?: T;
+  limit?: T;
+  carouselOptions?:
+    | T
+    | {
+        visible?: T;
+        showArrows?: T;
+      };
+  cssClass?: T;
+  elementClasses?:
+    | T
+    | {
+        heading?: T;
+        card?: T;
+        button?: T;
+      };
+  containerWidth?: T;
+  motion?: T;
+  hoverEffect?: T;
+  shadow?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StatsBandBlock_select".
+ */
+export interface StatsBandBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  background?: T;
+  stats?:
+    | T
+    | {
+        value?: T;
+        prefix?: T;
+        suffix?: T;
+        label?: T;
+        id?: T;
+      };
+  cssClass?: T;
+  elementClasses?:
+    | T
+    | {
+        heading?: T;
+        card?: T;
+        button?: T;
+      };
+  containerWidth?: T;
+  motion?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TabsBlockType_select".
+ */
+export interface TabsBlockTypeSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  background?: T;
+  tabs?:
+    | T
+    | {
+        label?: T;
+        icon?: T;
+        content?:
+          | T
+          | {
+              aamleEducation?: T | AamleEducationBlockSelect<T>;
+              heading?: T | HeadingBlockSelect<T>;
+              text?: T | TextBlockSelect<T>;
+              button?: T | ButtonBlockSelect<T>;
+              image?: T | ImageBlockSelect<T>;
+              spacer?: T | SpacerBlockSelect<T>;
+              divider?: T | DividerBlockSelect<T>;
+              iconBlock?: T | IconBlockSelect<T>;
+              content?: T | ContentBlockSelect<T>;
+              mediaBlock?: T | MediaBlockSelect<T>;
+              cta?: T | CallToActionBlockSelect<T>;
+              faq?: T | FAQBlockSelect<T>;
+              gatewayCards?: T | GatewayCardsBlockSelect<T>;
+              featureGrid?: T | FeatureGridBlockSelect<T>;
+              processSteps?: T | ProcessStepsBlockSelect<T>;
+              specialtyGrid?: T | SpecialtyGridBlockSelect<T>;
+              peopleGrid?: T | PeopleGridBlockSelect<T>;
+              servicesGrid?: T | ServicesGridBlockSelect<T>;
+              testimonialsGrid?: T | TestimonialsGridBlockSelect<T>;
+              statsBand?: T | StatsBandBlockSelect<T>;
+              splitFeature?: T | SplitFeatureBlockSelect<T>;
+              ctaBand?: T | CTABandBlockSelect<T>;
+            };
+        id?: T;
+      };
+  tabStyle?: T;
+  defaultTab?: T;
+  anchorId?: T;
+  cssClass?: T;
+  elementClasses?:
+    | T
+    | {
+        heading?: T;
+        card?: T;
+        button?: T;
+      };
+  containerWidth?: T;
+  motion?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AamleEducationBlock_select".
+ */
+export interface AamleEducationBlockSelect<T extends boolean = true> {
+  background?: T;
+  eyebrow?: T;
+  wordmark?: T;
+  subheading?: T;
+  badge?:
+    | T
+    | {
+        icon?: T;
+        text?: T;
+      };
+  description?: T;
+  items?:
+    | T
+    | {
+        icon?: T;
+        label?: T;
+        id?: T;
+      };
+  link?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
+        label?: T;
+        anchor?: T;
+        icon?: T;
+      };
+  image?: T;
+  imagePlaceholder?: T;
+  placeholderLabel?: T;
+  anchorId?: T;
+  cssClass?: T;
+  containerWidth?: T;
+  motion?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SplitFeatureBlock_select".
+ */
+export interface SplitFeatureBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  background?: T;
+  rowStyle?: T;
+  density?: T;
+  bulletStyle?: T;
+  rows?:
+    | T
+    | {
+        image?: T;
+        imagePlaceholder?: T;
+        placeholderLabel?: T;
+        placeholderIcon?: T;
+        imageSide?: T;
+        eyebrow?: T;
+        icon?: T;
+        title?: T;
+        body?: T;
+        bulletsLabel?: T;
+        bullets?:
+          | T
+          | {
+              text?: T;
+              icon?: T;
+              id?: T;
+            };
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+            };
+        anchorId?: T;
+        id?: T;
+      };
+  headingWeight?: T;
+  cssClass?: T;
+  elementClasses?:
+    | T
+    | {
+        heading?: T;
+        card?: T;
+        button?: T;
+      };
+  containerWidth?: T;
+  motion?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CTABandBlock_select".
+ */
+export interface CTABandBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  text?: T;
+  links?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  cssClass?: T;
+  elementClasses?:
+    | T
+    | {
+        heading?: T;
+        card?: T;
+        button?: T;
+      };
+  containerWidth?: T;
+  motion?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CalloutBlock_select".
+ */
+export interface CalloutBlockSelect<T extends boolean = true> {
+  style?: T;
+  icon?: T;
+  tag?: T;
+  heading?: T;
+  body?: T;
+  links?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactDetailsBlock_select".
+ */
+export interface ContactDetailsBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  useGlobal?: T;
+  items?:
+    | T
+    | {
+        icon?: T;
+        label?: T;
+        value?: T;
+        href?: T;
+        note?: T;
+        id?: T;
+      };
+  cssClass?: T;
+  containerWidth?: T;
+  motion?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "IconListBlock_select".
+ */
+export interface IconListBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  headingAlign?: T;
+  columns?: T;
+  items?:
+    | T
+    | {
+        icon?: T;
+        text?: T;
+        link?:
+          | T
+          | {
+              url?: T;
+            };
+        id?: T;
+      };
+  cssClass?: T;
+  containerWidth?: T;
+  motion?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MapEmbedBlock_select".
+ */
+export interface MapEmbedBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  kind?: T;
+  office?: T;
+  embedUrl?: T;
+  aspect?: T;
+  title?: T;
+  showOfficeInfo?: T;
+  officeHoursHeading?: T;
+  transportHeading?: T;
+  parkingHeading?: T;
+  actions?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  cssClass?: T;
+  containerWidth?: T;
+  motion?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LeadershipSpotlightBlock_select".
+ */
+export interface LeadershipSpotlightBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  background?: T;
+  photo?: T;
+  placeholderIcon?: T;
+  name?: T;
+  role?: T;
+  badge?: T;
+  tagline?: T;
+  body?: T;
+  credentials?:
+    | T
+    | {
+        cred?: T;
+        id?: T;
+      };
+  link?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
+        label?: T;
+        anchor?: T;
+        icon?: T;
+      };
+  cssClass?: T;
+  elementClasses?:
+    | T
+    | {
+        heading?: T;
+        card?: T;
+        button?: T;
+      };
+  containerWidth?: T;
+  motion?: T;
+  anchorId?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PortalCtaBlock_select".
+ */
+export interface PortalCtaBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  tiles?:
+    | T
+    | {
+        icon?: T;
+        label?: T;
+        id?: T;
+      };
+  links?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+            };
+        id?: T;
+      };
+  anchorId?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "VideoEmbedBlock_select".
+ */
+export interface VideoEmbedBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  provider?: T;
+  aspect?: T;
+  videoId?: T;
+  url?: T;
+  videoTitle?: T;
+  caption?: T;
+  background?: T;
+  anchorId?: T;
+  cssClass?: T;
+  containerWidth?: T;
+  motion?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TryBookingBlock_select".
+ */
+export interface TryBookingBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  eventId?: T;
+  widgetType?: T;
+  fallbackLabel?: T;
+  background?: T;
+  anchorId?: T;
+  cssClass?: T;
+  containerWidth?: T;
+  motion?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FormBlock_select".
+ */
+export interface FormBlockSelect<T extends boolean = true> {
+  form?: T;
+  enableIntro?: T;
+  introContent?: T;
+  cardStyle?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ArchiveBlock_select".
+ */
+export interface ArchiveBlockSelect<T extends boolean = true> {
+  background?: T;
+  introContent?: T;
+  populateBy?: T;
+  relationTo?: T;
+  view?: T;
+  categories?: T;
+  stream?: T;
+  featured?: T;
+  postStyle?: T;
+  eventStyle?: T;
+  limit?: T;
+  selectedDocs?: T;
+  columns?: T;
+  readMoreLabel?: T;
+  viewAllLink?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+            };
+      };
+  cssClass?: T;
+  anchorId?: T;
+  hideWhenEmpty?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AvailabilityBlock_select".
+ */
+export interface AvailabilityBlockSelect<T extends boolean = true> {
+  showCarousel?: T;
+  showLegend?: T;
+  showSpecialtyBadge?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SlideCarouselBlock_select".
+ */
+export interface SlideCarouselBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  autoplay?: T;
+  interval?: T;
+  slides?:
+    | T
+    | {
+        title?: T;
+        body?: T;
+        accent?: T;
+        visualLabel?: T;
+        image?: T;
+        pills?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  cssClass?: T;
+  elementClasses?:
+    | T
+    | {
+        heading?: T;
+        card?: T;
+        button?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SpecialistDirectoryBlock_select".
+ */
+export interface SpecialistDirectoryBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  background?: T;
+  enableSearch?: T;
+  enableSpecialty?: T;
+  enableLocation?: T;
+  enableAccreditation?: T;
+  sortBy?: T;
+  searchPlaceholder?: T;
+  countTemplate?: T;
+  searchGroupLabel?: T;
+  specialtyGroupLabel?: T;
+  accreditationGroupLabel?: T;
+  locationGroupLabel?: T;
+  specialtyLabel?: T;
+  locationLabel?: T;
+  accreditationLabel?: T;
+  emptyHeading?: T;
+  emptyBody?: T;
+  cardCtaLabel?: T;
+  secondaryCtaLabel?: T;
+  secondaryCtaHref?: T;
+  resetLabel?: T;
+  locationsLabel?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SpecialtyDirectoryBlock_select".
+ */
+export interface SpecialtyDirectoryBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  background?: T;
+  showFilterBar?: T;
+  showRosters?: T;
+  showKeyAreas?: T;
+  allTabLabel?: T;
+  emptyLabel?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ResourcesGridBlock_select".
+ */
+export interface ResourcesGridBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  background?: T;
+  source?: T;
+  variant?: T;
+  audience?: T;
+  resourceType?: T;
+  resources?: T;
+  columns?: T;
+  limit?: T;
+  anchorId?: T;
+  cssClass?: T;
+  hideWhenEmpty?: T;
+  containerWidth?: T;
+  motion?: T;
+  hoverEffect?: T;
+  shadow?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AppointmentGuideBlock_select".
+ */
+export interface AppointmentGuideBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  selectLabel?: T;
+  types?:
+    | T
+    | {
+        icon?: T;
+        label?: T;
+        sublabel?: T;
+        anchorId?: T;
+        tabs?:
+          | T
+          | {
+              icon?: T;
+              label?: T;
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    heading?: T;
+                    body?: T;
+                    id?: T;
+                  };
+              highlightCards?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    bullets?:
+                      | T
+                      | {
+                          text?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              callout?:
+                | T
+                | {
+                    style?: T;
+                    text?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MissionPillarsBlock_select".
+ */
+export interface MissionPillarsBlockSelect<T extends boolean = true> {
+  background?: T;
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  pillars?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  containerWidth?: T;
+  motion?: T;
+  cssClass?: T;
+  anchorId?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ValueCardsBlock_select".
+ */
+export interface ValueCardsBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  background?: T;
+  cards?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  cssClass?: T;
+  anchorId?: T;
+  containerWidth?: T;
+  motion?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "WhyVerifyBlock_select".
+ */
+export interface WhyVerifyBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  items?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        body?: T;
+        id?: T;
+      };
+  image?: T;
+  placeholderLabel?: T;
+  anchorId?: T;
+  containerWidth?: T;
+  motion?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AudiencePathwaysBlock_select".
+ */
+export interface AudiencePathwaysBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  background?: T;
+  pathways?:
+    | T
+    | {
+        variant?: T;
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        steps?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              id?: T;
+            };
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+            };
+        id?: T;
+      };
+  anchorId?: T;
+  cssClass?: T;
+  containerWidth?: T;
+  motion?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BookingChooserBlock_select".
+ */
+export interface BookingChooserBlockSelect<T extends boolean = true> {
+  anchorId?: T;
+  halves?:
+    | T
+    | {
+        icon?: T;
+        accent?: T;
+        eyebrow?: T;
+        title?: T;
+        description?: T;
+        links?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                    anchor?: T;
+                    icon?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  density?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CostGridBlock_select".
+ */
+export interface CostGridBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  cards?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  note?: T;
+  anchorId?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NewsletterBlock_select".
+ */
+export interface NewsletterBlockSelect<T extends boolean = true> {
+  form?: T;
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  placeholder?: T;
+  buttonLabel?: T;
+  note?: T;
+  anchorId?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SectionNavBlock_select".
+ */
+export interface SectionNavBlockSelect<T extends boolean = true> {
+  items?:
+    | T
+    | {
+        label?: T;
+        anchorId?: T;
+        id?: T;
+      };
+  sticky?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeaturedArticlesBlock_select".
+ */
+export interface FeaturedArticlesBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  autoplay?: T;
+  interval?: T;
+  showArrows?: T;
+  showDots?: T;
+  source?: T;
+  posts?: T;
+  limit?: T;
+  badgeLabel?: T;
+  bylinePrefix?: T;
+  ctaLabel?: T;
+  anchorId?: T;
+  background?: T;
+  cssClass?: T;
+  hideWhenEmpty?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EventsExplorerBlock_select".
+ */
+export interface EventsExplorerBlockSelect<T extends boolean = true> {
+  eyebrow?: T;
+  heading?: T;
+  subheading?: T;
+  textColour?: T;
+  mode?: T;
+  pageSize?: T;
+  showSearch?: T;
+  cardStyle?: T;
+  groups?:
+    | T
+    | {
+        upcomingEyebrow?: T;
+        upcomingHeading?: T;
+        upcomingIntro?: T;
+        upcomingLinkLabel?: T;
+        upcomingLinkUrl?: T;
+        pastEyebrow?: T;
+        pastHeading?: T;
+        pastIntro?: T;
+        pastLinkLabel?: T;
+        pastLinkUrl?: T;
+      };
+  separator?:
+    | T
+    | {
+        divider?: T;
+        dividerWidth?: T;
+        pastBackground?: T;
+      };
+  labels?:
+    | T
+    | {
+        moreInfoLabel?: T;
+        viewRecapLabel?: T;
+        upcomingHeading?: T;
+        pastHeading?: T;
+        emptyUpcoming?: T;
+        emptyUpcomingSearch?: T;
+        emptyPast?: T;
+        emptyPastSearch?: T;
+        loadingLabel?: T;
+        searchPlaceholder?: T;
+        datesLabel?: T;
+        searchButtonLabel?: T;
+      };
+  anchorId?: T;
+  background?: T;
+  cssClass?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  title?: T;
+  heroImage?: T;
+  excerpt?: T;
+  readTime?: T;
+  author?:
+    | T
+    | {
+        source?: T;
+        name?: T;
+        role?: T;
+        photo?: T;
+        bio?: T;
+      };
+  content?: T;
+  attachments?:
+    | T
+    | {
+        file?: T;
+        label?: T;
+        id?: T;
+      };
+  showToc?: T;
+  relatedPosts?: T;
+  categories?: T;
+  stream?: T;
+  featured?: T;
+  specialty?: T;
+  relatedSpecialist?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  publishedAt?: T;
+  authors?: T;
+  populatedAuthors?:
+    | T
+    | {
+        id?: T;
+        name?: T;
+      };
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events_select".
+ */
+export interface EventsSelect<T extends boolean = true> {
+  title?: T;
+  date?: T;
+  timeLabel?: T;
+  location?: T;
+  host?: T;
+  registrationUrl?: T;
+  registrationLabel?: T;
+  hostEventUrl?: T;
+  registrationClosesAt?: T;
+  cpdEligible?: T;
+  cpdPoints?: T;
+  cost?: T;
+  locationRef?: T;
+  image?: T;
+  excerpt?: T;
+  description?: T;
+  recap?: T;
+  showToc?: T;
+  gallery?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        id?: T;
+      };
+  attachments?:
+    | T
+    | {
+        file?: T;
+        label?: T;
+        id?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  eventType?: T;
+  presenters?: T;
+  guestPresenters?:
+    | T
+    | {
+        name?: T;
+        role?: T;
+        organisation?: T;
+        id?: T;
+      };
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services_select".
+ */
+export interface ServicesSelect<T extends boolean = true> {
+  title?: T;
+  category?: T;
+  serviceGroup?: T;
+  icon?: T;
+  photo?: T;
+  linkOverride?: T;
+  shortDescription?: T;
+  body?: T;
+  featured?: T;
+  order?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resources_select".
+ */
+export interface ResourcesSelect<T extends boolean = true> {
+  title?: T;
+  icon?: T;
+  resourceType?: T;
+  audience?: T;
+  description?: T;
+  file?: T;
+  externalUrl?: T;
+  ctaLabel?: T;
+  order?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "offices_select".
+ */
+export interface OfficesSelect<T extends boolean = true> {
+  title?: T;
+  isPrimary?: T;
+  address?: T;
+  phone?: T;
+  email?: T;
+  mapEmbedUrl?: T;
+  hours?:
+    | T
+    | {
+        days?: T;
+        time?: T;
+        id?: T;
+      };
+  hoursNote?: T;
+  transport?:
+    | T
+    | {
+        label?: T;
+        note?: T;
+        href?: T;
+        id?: T;
+      };
+  parking?:
+    | T
+    | {
+        name?: T;
+        address?: T;
+        walkTime?: T;
+        heightLimit?: T;
+        href?: T;
+        note?: T;
+        id?: T;
+      };
+  note?: T;
+  order?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials_select".
+ */
+export interface TestimonialsSelect<T extends boolean = true> {
+  quote?: T;
+  authorRole?: T;
+  org?: T;
+  rating?: T;
+  order?: T;
+  featured?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "specialties_select".
+ */
+export interface SpecialtiesSelect<T extends boolean = true> {
+  title?: T;
+  icon?: T;
+  category?: T;
+  description?: T;
+  keyAreas?:
+    | T
+    | {
+        area?: T;
+        id?: T;
+      };
+  order?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "specialty-categories_select".
+ */
+export interface SpecialtyCategoriesSelect<T extends boolean = true> {
+  title?: T;
+  icon?: T;
+  order?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "claim-types_select".
+ */
+export interface ClaimTypesSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  order?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "assessment-types_select".
+ */
+export interface AssessmentTypesSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "event-types_select".
+ */
+export interface EventTypesSelect<T extends boolean = true> {
+  title?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "areas-of-expertise_select".
+ */
+export interface AreasOfExpertiseSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "accreditations_select".
+ */
+export interface AccreditationsSelect<T extends boolean = true> {
+  title?: T;
+  icon?: T;
+  description?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "locations_select".
+ */
+export interface LocationsSelect<T extends boolean = true> {
+  title?: T;
+  region?: T;
+  order?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "streams_select".
+ */
+export interface StreamsSelect<T extends boolean = true> {
+  title?: T;
+  icon?: T;
+  description?: T;
+  order?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories_select".
+ */
+export interface CategoriesSelect<T extends boolean = true> {
+  title?: T;
+  icon?: T;
+  color?: T;
+  description?: T;
+  generateSlug?: T;
+  slug?: T;
+  parent?: T;
+  breadcrumbs?:
+    | T
+    | {
+        doc?: T;
+        url?: T;
+        label?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "departments_select".
+ */
+export interface DepartmentsSelect<T extends boolean = true> {
+  title?: T;
+  order?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "specialists_select".
+ */
+export interface SpecialistsSelect<T extends boolean = true> {
+  _order?: T;
+  title?: T;
+  position?: T;
+  photo?: T;
+  profilePhotoShape?: T;
+  bio?: T;
+  locations?: T;
+  qualifications?:
+    | T
+    | {
+        qualification?: T;
+        icon?: T;
+        id?: T;
+      };
+  accreditations?: T;
+  languages?:
+    | T
+    | {
+        language?: T;
+        id?: T;
+      };
+  bookingUrl?: T;
+  cv?: T;
+  sampleReport?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  specialty?: T;
+  claimTypes?: T;
+  assessmentTypes?: T;
+  areasOfExpertise?: T;
+  featured?: T;
+  advertise?: T;
+  availabilityHighlight?: T;
+  availabilityNote?: T;
+  firstName?: T;
+  lastName?: T;
+  publishedAt?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team_select".
+ */
+export interface TeamSelect<T extends boolean = true> {
+  title?: T;
+  role?: T;
+  photo?: T;
+  profilePhoto?: T;
+  hidePhotoOnProfile?: T;
+  profilePhotoShape?: T;
+  bio?: T;
+  qualifications?:
+    | T
+    | {
+        qualification?: T;
+        id?: T;
+      };
+  sections?:
+    | T
+    | {
+        heading?: T;
+        body?: T;
+        id?: T;
+      };
+  meta?:
+    | T
+    | {
+        title?: T;
+        image?: T;
+        description?: T;
+      };
+  department?: T;
+  order?: T;
+  publishedAt?: T;
+  generateSlug?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "availability-sessions_select".
+ */
+export interface AvailabilitySessionsSelect<T extends boolean = true> {
+  specialist?: T;
+  date?: T;
+  startTime?: T;
+  endTime?: T;
+  mode?: T;
+  notes?: T;
+  status?: T;
+  expiresAt?: T;
+  title?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  caption?: T;
+  zoom?: T;
+  folder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        square?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        small?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        medium?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        large?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        xlarge?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        og?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "icons_select".
+ */
+export interface IconsSelect<T extends boolean = true> {
+  name?: T;
+  colour?: T;
+  viewBox?: T;
+  markup?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -257,19 +12907,200 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
+ * via the `definition` "redirects_select".
  */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
+export interface RedirectsSelect<T extends boolean = true> {
+  from?: T;
+  to?:
+    | T
+    | {
+        type?: T;
+        reference?: T;
+        url?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forms_select".
+ */
+export interface FormsSelect<T extends boolean = true> {
+  title?: T;
+  fields?:
+    | T
+    | {
+        checkbox?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              width?: T;
+              required?: T;
+              defaultValue?: T;
+              id?: T;
+              blockName?: T;
+            };
+        country?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              width?: T;
+              required?: T;
+              id?: T;
+              blockName?: T;
+            };
+        email?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              width?: T;
+              required?: T;
+              placeholder?: T;
+              id?: T;
+              blockName?: T;
+            };
+        message?:
+          | T
+          | {
+              message?: T;
+              id?: T;
+              blockName?: T;
+            };
+        number?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              width?: T;
+              defaultValue?: T;
+              required?: T;
+              placeholder?: T;
+              id?: T;
+              blockName?: T;
+            };
+        select?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              width?: T;
+              defaultValue?: T;
+              placeholder?: T;
+              options?:
+                | T
+                | {
+                    label?: T;
+                    value?: T;
+                    id?: T;
+                  };
+              required?: T;
+              id?: T;
+              blockName?: T;
+            };
+        state?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              width?: T;
+              required?: T;
+              id?: T;
+              blockName?: T;
+            };
+        text?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              width?: T;
+              defaultValue?: T;
+              required?: T;
+              placeholder?: T;
+              id?: T;
+              blockName?: T;
+            };
+        textarea?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              width?: T;
+              defaultValue?: T;
+              required?: T;
+              placeholder?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  submitButtonLabel?: T;
+  confirmationType?: T;
+  confirmationMessage?: T;
+  redirect?:
+    | T
+    | {
+        url?: T;
+      };
+  emails?:
+    | T
+    | {
+        emailTo?: T;
+        cc?: T;
+        bcc?: T;
+        replyTo?: T;
+        emailFrom?: T;
+        subject?: T;
+        message?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-submissions_select".
+ */
+export interface FormSubmissionsSelect<T extends boolean = true> {
+  form?: T;
+  submissionData?:
+    | T
+    | {
+        field?: T;
+        value?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "search_select".
+ */
+export interface SearchSelect<T extends boolean = true> {
+  title?: T;
+  priority?: T;
+  doc?: T;
+  slug?: T;
+  uri?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  categories?:
+    | T
+    | {
+        relationTo?: T;
+        categoryID?: T;
+        title?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -278,6 +13109,49 @@ export interface MediaSelect<T extends boolean = true> {
 export interface PayloadKvSelect<T extends boolean = true> {
   key?: T;
   data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs_select".
+ */
+export interface PayloadJobsSelect<T extends boolean = true> {
+  input?: T;
+  taskStatus?: T;
+  completedAt?: T;
+  totalTried?: T;
+  hasError?: T;
+  error?: T;
+  log?:
+    | T
+    | {
+        executedAt?: T;
+        completedAt?: T;
+        taskSlug?: T;
+        taskID?: T;
+        input?: T;
+        output?: T;
+        state?: T;
+        error?: T;
+        id?: T;
+      };
+  taskSlug?: T;
+  queue?: T;
+  waitUntil?: T;
+  processing?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-folders_select".
+ */
+export interface PayloadFoldersSelect<T extends boolean = true> {
+  name?: T;
+  folder?: T;
+  documentsAndFolders?: T;
+  folderType?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -312,6 +13186,2441 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Sidebar CTA cards + fixed labels shown on every In-the-Loop article.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "article-settings".
+ */
+export interface ArticleSetting {
+  id: number;
+  /**
+   * The fixed cards in the article right rail (e.g. "Have a Question?", "Make a Referral").
+   */
+  sidebarCards?:
+    | {
+        /**
+         * Icon shown with this item.
+         */
+        icon?: string | null;
+        heading: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        body?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        link: {
+          type?: ('reference' | 'custom' | 'enquiry') | null;
+          newTab?: boolean | null;
+          /**
+           * You can link to a draft. The link will 404 for visitors until that document is published.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'specialists';
+                value: number | Specialist;
+              } | null)
+            | ({
+                relationTo: 'team';
+                value: number | Team;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
+              } | null);
+          url?: string | null;
+          label: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          /**
+           * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+           */
+          anchor?: string | null;
+          /**
+           * Optional leading icon shown before the label.
+           */
+          icon?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  labels?: {
+    /**
+     * Heading above an article’s attached files.
+     */
+    attachmentsHeading?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    related?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    toc?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    topics?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Second breadcrumb link (the In the Loop hub). The first crumb — “Home” — is shared site-wide and lives in Site Settings → Breadcrumbs.
+     */
+    breadcrumbSectionLabel?: string | null;
+    /**
+     * Shown under a stream heading when that stream has no description of its own.
+     */
+    streamFallbackSubtitle?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    bylinePrefix?: string | null;
+    minReadSuffix?: string | null;
+    shareLinkedinLabel?: string | null;
+    shareCopyLabel?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Host-specific boilerplate copy shown on event detail pages (AAMLE / VERIFY).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events-settings".
+ */
+export interface EventsSetting {
+  id: number;
+  aamle?: {
+    /**
+     * Intro paragraph shown on every event by this host.
+     */
+    blurb?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * The tinted one-line panel under the intro, e.g. "Run by AAMLE — VERIFY’s education & training arm."
+     */
+    callout?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    attendHeading?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    recapHeading?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    attendBody?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    registerLabel?: string | null;
+    contactLabel?: string | null;
+    /**
+     * Label for the button linking to the event on the host’s own site, e.g. "View this event on AAMLE". Only shown on events that have a Host event page URL.
+     */
+    hostEventLinkLabel?: string | null;
+  };
+  verify?: {
+    /**
+     * Intro paragraph shown on every event by this host.
+     */
+    blurb?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * The tinted one-line panel under the intro, e.g. "Run by AAMLE — VERIFY’s education & training arm."
+     */
+    callout?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    attendHeading?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    recapHeading?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    attendBody?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    registerLabel?: string | null;
+    contactLabel?: string | null;
+    /**
+     * Label for the button linking to the event on the host’s own site, e.g. "View this event on AAMLE". Only shown on events that have a Host event page URL.
+     */
+    hostEventLinkLabel?: string | null;
+  };
+  /**
+   * Generic UI labels shown on every event detail page, regardless of host.
+   */
+  labels?: {
+    /**
+     * Heading above the presenter cards on an event page.
+     */
+    presentersHeading?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Second breadcrumb link (the events hub). The first crumb — “Home” — is shared site-wide and lives in Site Settings → Breadcrumbs.
+     */
+    breadcrumbSectionLabel?: string | null;
+    /**
+     * Status pill for events still to come.
+     */
+    statusUpcomingLabel?: string | null;
+    /**
+     * Status pill for events whose date has passed.
+     */
+    statusPastLabel?: string | null;
+    /**
+     * Cost shown when an event has no cost set.
+     */
+    freeLabel?: string | null;
+    /**
+     * CPD line when points are set. Use {points} for the number.
+     */
+    cpdPointsTemplate?: string | null;
+    /**
+     * CPD line when eligible but no point count is set.
+     */
+    cpdEligibleLabel?: string | null;
+    /**
+     * Shown under a past event that has no recap AND no photos or downloads. If there are photos or downloads, the line below is used instead — this one would be telling people to ask for something already on the page.
+     */
+    concludedFallback?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Shown under a past event that has no recap written yet but does have photos or downloads attached.
+     */
+    concludedWithMaterials?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Link back to the events listing at the bottom of the page.
+     */
+    backToEventsLabel?: string | null;
+    /**
+     * Where the “Contact Us” button goes once registrations have closed. It used to reuse the event’s external registration link, which sent people to the booking page they could no longer use.
+     */
+    contactUrl?: string | null;
+    /**
+     * Heading above the recap’s contents list.
+     */
+    recapTocLabel?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Heading above an event’s photo gallery.
+     */
+    galleryHeading?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Heading above an event’s downloads / attachments list.
+     */
+    attachmentsHeading?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Breadcrumb + fixed labels shown on every team member profile page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-settings".
+ */
+export interface TeamSetting {
+  id: number;
+  labels?: {
+    /**
+     * Second breadcrumb link (the team index). The first crumb — “Home” — is shared site-wide and lives in Site Settings → Breadcrumbs.
+     */
+    breadcrumbSectionLabel?: string | null;
+    /**
+     * Sidebar label above each qualification.
+     */
+    qualificationLabel?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Prefix for the bio heading, e.g. “About” in “About Wes”.
+     */
+    aboutPrefix?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Shared copy shown on every specialist profile (the booking-portal CTA + labels).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "specialist-profile".
+ */
+export interface SpecialistProfile {
+  id: number;
+  portalCta?: {
+    eyebrow?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    heading?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    subheading?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    tiles?:
+      | {
+          /**
+           * Icon shown with this item.
+           */
+          icon?: string | null;
+          label: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          id?: string | null;
+        }[]
+      | null;
+    enquiryLabel?: string | null;
+    /**
+     * Shown only when the specialist has a Booking link.
+     */
+    bookingLabel?: string | null;
+    /**
+     * Shown only when a CV is attached.
+     */
+    cvLabel?: string | null;
+    /**
+     * Shown only when a sample report is attached.
+     */
+    sampleReportLabel?: string | null;
+    /**
+     * Optional — defaults to the Site Settings / Footer contact email.
+     */
+    enquiryEmail?: string | null;
+  };
+  /**
+   * Subject line of the booking-portal enquiry email (mailto).
+   */
+  portalEnquirySubject?: string | null;
+  /**
+   * Enquiry-type tag sent with the booking-portal CTA.
+   */
+  portalEnquiryType?: string | null;
+  /**
+   * The fixed headings on the profile body (leave default unless rebranding).
+   */
+  labels?: {
+    biography?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    assessmentAreas?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    qualifications?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    accreditations?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    assessmentTypes?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    claimTypes?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  /**
+   * The middle crumb of the trail shown at the top of every profile. The first crumb — “Home” — is shared site-wide (Site Settings → Breadcrumbs); the last is the specialist’s own name.
+   */
+  breadcrumb?: {
+    breadcrumbParentLabel?: string | null;
+    breadcrumbParentHref?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Wording for the availability page and the prefilled enquiry email its Send button opens. The slots themselves are in Availability Sessions.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "specialist-availability".
+ */
+export interface SpecialistAvailability {
+  id: number;
+  heading?: string | null;
+  /**
+   * Introductory copy shown above the availability list.
+   */
+  intro?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Small label above the carousel heading.
+   */
+  carouselEyebrow?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Wrap a word in [[brackets]] to highlight it in the accent colour.
+   */
+  carouselTitle?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Intro paragraph shown under the carousel heading.
+   */
+  carouselSubtitle?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Where the prefilled enquiry email is sent.
+   */
+  enquiryEmail?: string | null;
+  enquirySubject?: string | null;
+  enquiryBodyIntro?: string | null;
+  enquiryBodyFooter?: string | null;
+  /**
+   * Short UI labels for the interactive availability grid (legend, action bar).
+   */
+  labels?: {
+    /**
+     * Label for in-person sessions (legend + chips). Plain text on purpose: it is handed to the availability picker as a button or legend label and goes into the enquiry email, where markup cannot render.
+     */
+    modeInPersonLabel?: string | null;
+    /**
+     * Label for telehealth sessions (legend + chips). Plain text on purpose: it is handed to the availability picker as a button or legend label and goes into the enquiry email, where markup cannot render.
+     */
+    modeTelehealthLabel?: string | null;
+    /**
+     * Label for sessions offered either way (legend + chips). Plain text on purpose: it is handed to the availability picker as a button or legend label and goes into the enquiry email, where markup cannot render.
+     */
+    modeEitherLabel?: string | null;
+    /**
+     * Hint shown in the legend when sessions are available to select. Plain text on purpose: it is handed to the availability picker as a button or legend label and goes into the enquiry email, where markup cannot render.
+     */
+    selectionHint?: string | null;
+    /**
+     * Button that clears the current selection. Plain text on purpose: it is handed to the availability picker as a button or legend label and goes into the enquiry email, where markup cannot render.
+     */
+    clearLabel?: string | null;
+    /**
+     * Button that opens the prefilled enquiry email. Plain text on purpose: it is handed to the availability picker as a button or legend label and goes into the enquiry email, where markup cannot render.
+     */
+    sendEnquiryLabel?: string | null;
+    /**
+     * Selection count in the action bar. Use {count} for the number and {noun} for session/sessions.
+     */
+    sessionsSelectedTemplate?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * The main navigation and its dropdowns, plus the button at the top right. Shown on every page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "header".
+ */
+export interface Header {
+  id: number;
+  navItems?:
+    | {
+        link: {
+          type?: ('reference' | 'custom' | 'enquiry') | null;
+          newTab?: boolean | null;
+          /**
+           * You can link to a draft. The link will 404 for visitors until that document is published.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'specialists';
+                value: number | Specialist;
+              } | null)
+            | ({
+                relationTo: 'team';
+                value: number | Team;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
+              } | null);
+          url?: string | null;
+          label: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          /**
+           * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+           */
+          anchor?: string | null;
+          /**
+           * Optional leading icon shown before the label.
+           */
+          icon?: string | null;
+        };
+        /**
+         * Optional dropdown shown when hovering this nav item.
+         */
+        subItems?:
+          | {
+              link: {
+                type?: ('reference' | 'custom' | 'enquiry') | null;
+                newTab?: boolean | null;
+                /**
+                 * You can link to a draft. The link will 404 for visitors until that document is published.
+                 */
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null)
+                  | ({
+                      relationTo: 'specialists';
+                      value: number | Specialist;
+                    } | null)
+                  | ({
+                      relationTo: 'team';
+                      value: number | Team;
+                    } | null)
+                  | ({
+                      relationTo: 'events';
+                      value: number | Event;
+                    } | null);
+                url?: string | null;
+                label: {
+                  root: {
+                    type: string;
+                    children: {
+                      type: any;
+                      version: number;
+                      [k: string]: unknown;
+                    }[];
+                    direction: ('ltr' | 'rtl') | null;
+                    format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                    indent: number;
+                    version: number;
+                  };
+                  [k: string]: unknown;
+                };
+                /**
+                 * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+                 */
+                anchor?: string | null;
+                /**
+                 * Optional leading icon shown before the label.
+                 */
+                icon?: string | null;
+              };
+              /**
+               * Optional third-level menu shown when hovering this item.
+               */
+              subSubItems?:
+                | {
+                    link: {
+                      type?: ('reference' | 'custom' | 'enquiry') | null;
+                      newTab?: boolean | null;
+                      /**
+                       * You can link to a draft. The link will 404 for visitors until that document is published.
+                       */
+                      reference?:
+                        | ({
+                            relationTo: 'pages';
+                            value: number | Page;
+                          } | null)
+                        | ({
+                            relationTo: 'posts';
+                            value: number | Post;
+                          } | null)
+                        | ({
+                            relationTo: 'specialists';
+                            value: number | Specialist;
+                          } | null)
+                        | ({
+                            relationTo: 'team';
+                            value: number | Team;
+                          } | null)
+                        | ({
+                            relationTo: 'events';
+                            value: number | Event;
+                          } | null);
+                      url?: string | null;
+                      label: {
+                        root: {
+                          type: string;
+                          children: {
+                            type: any;
+                            version: number;
+                            [k: string]: unknown;
+                          }[];
+                          direction: ('ltr' | 'rtl') | null;
+                          format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                          indent: number;
+                          version: number;
+                        };
+                        [k: string]: unknown;
+                      };
+                      /**
+                       * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+                       */
+                      anchor?: string | null;
+                      /**
+                       * Optional leading icon shown before the label.
+                       */
+                      icon?: string | null;
+                    };
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Primary button shown at the right of the header (e.g. "Book an Appointment").
+   */
+  cta: {
+    enabled?: boolean | null;
+    link: {
+      type?: ('reference' | 'custom' | 'enquiry') | null;
+      newTab?: boolean | null;
+      /**
+       * You can link to a draft. The link will 404 for visitors until that document is published.
+       */
+      reference?:
+        | ({
+            relationTo: 'pages';
+            value: number | Page;
+          } | null)
+        | ({
+            relationTo: 'posts';
+            value: number | Post;
+          } | null)
+        | ({
+            relationTo: 'specialists';
+            value: number | Specialist;
+          } | null)
+        | ({
+            relationTo: 'team';
+            value: number | Team;
+          } | null)
+        | ({
+            relationTo: 'events';
+            value: number | Event;
+          } | null);
+      url?: string | null;
+      label: {
+        root: {
+          type: string;
+          children: {
+            type: any;
+            version: number;
+            [k: string]: unknown;
+          }[];
+          direction: ('ltr' | 'rtl') | null;
+          format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+          indent: number;
+          version: number;
+        };
+        [k: string]: unknown;
+      };
+      /**
+       * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+       */
+      anchor?: string | null;
+      /**
+       * Optional leading icon shown before the label.
+       */
+      icon?: string | null;
+    };
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * The footer on every page: link columns, contact details and opening hours. Contact fields left blank fall back to your primary Office.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer".
+ */
+export interface Footer {
+  id: number;
+  /**
+   * Optional line under the footer logo. Blank by default (reference footer has none).
+   */
+  tagline?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  columns?:
+    | {
+        title: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        links?:
+          | {
+              link: {
+                type?: ('reference' | 'custom' | 'enquiry') | null;
+                newTab?: boolean | null;
+                /**
+                 * You can link to a draft. The link will 404 for visitors until that document is published.
+                 */
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null)
+                  | ({
+                      relationTo: 'specialists';
+                      value: number | Specialist;
+                    } | null)
+                  | ({
+                      relationTo: 'team';
+                      value: number | Team;
+                    } | null)
+                  | ({
+                      relationTo: 'events';
+                      value: number | Event;
+                    } | null);
+                url?: string | null;
+                label: {
+                  root: {
+                    type: string;
+                    children: {
+                      type: any;
+                      version: number;
+                      [k: string]: unknown;
+                    }[];
+                    direction: ('ltr' | 'rtl') | null;
+                    format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                    indent: number;
+                    version: number;
+                  };
+                  [k: string]: unknown;
+                };
+                /**
+                 * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+                 */
+                anchor?: string | null;
+                /**
+                 * Optional leading icon shown before the label.
+                 */
+                icon?: string | null;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  contact?: {
+    phone?: string | null;
+    /**
+     * e.g. tel:0733560469
+     */
+    phoneHref?: string | null;
+    email?: string | null;
+    address?: string | null;
+  };
+  hours?:
+    | {
+        days?: string | null;
+        time?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  social?:
+    | {
+        platform: 'linkedin' | 'facebook' | 'instagram' | 'x';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  legalLinks?:
+    | {
+        link: {
+          type?: ('reference' | 'custom' | 'enquiry') | null;
+          newTab?: boolean | null;
+          /**
+           * You can link to a draft. The link will 404 for visitors until that document is published.
+           */
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: number | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: number | Post;
+              } | null)
+            | ({
+                relationTo: 'specialists';
+                value: number | Specialist;
+              } | null)
+            | ({
+                relationTo: 'team';
+                value: number | Team;
+              } | null)
+            | ({
+                relationTo: 'events';
+                value: number | Event;
+              } | null);
+          url?: string | null;
+          label: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          /**
+           * Optional #id on the target page, e.g. "file-review" to land on the File Review section. Enter it without the #. Must match that section's Anchor ID.
+           */
+          anchor?: string | null;
+          /**
+           * Optional leading icon shown before the label.
+           */
+          icon?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Logo, favicon, brand colours, the form behind the Make an Enquiry drawer, and the wording of the booking-portal registration email.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  siteName?: string | null;
+  /**
+   * Main logo shown in the header (and footer if no footer logo is set).
+   */
+  logo?: (number | null) | Media;
+  /**
+   * Optional override for the footer; falls back to the main logo.
+   */
+  logoFooter?: (number | null) | Media;
+  /**
+   * Browser tab / app icon. Use a square PNG or SVG.
+   */
+  favicon?: (number | null) | Media;
+  /**
+   * The brand shield. Used in three places: the watermark on the home hero’s definition panel, the large mark behind every interior page hero, and the small mark on the Contact page’s portal cards. Falls back to the bundled VERIFY shield when empty. (The home hero’s “Show VERIFY shield watermark” toggle controls whether the first of those appears at all.)
+   */
+  shield?: (number | null) | Media;
+  /**
+   * Default preview image when pages are shared. Ideally 1200×630.
+   */
+  socialImage?: (number | null) | Media;
+  /**
+   * The form that the site-wide “Make an Enquiry” drawer submits into. Every enquiry button on the site posts here, and the chosen form’s Emails tab decides who is notified. If this is empty the drawer tells visitors it is unavailable rather than silently discarding their enquiry — so set it, and check it after renaming any form.
+   */
+  enquiryForm?: (number | null) | Form;
+  /**
+   * Where the registration request is sent.
+   */
+  registrationEnquiryEmail?: string | null;
+  registrationEnquirySubject?: string | null;
+  /**
+   * The visitor sees this in their mail app and fills in the blanks. Blank lines and spacing are kept exactly as typed.
+   */
+  registrationEnquiryBody?: string | null;
+  /**
+   * Overrides the site colour palette at runtime. Empty fields use the built-in defaults. The “on dark” colours below are used automatically wherever text sits on a dark or coloured band — set those rather than restyling individual sections. Font families and sizes live in Design System.
+   */
+  colors?: {
+    /**
+     * Default: #1c75bc. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    primary?: string | null;
+    /**
+     * Default: #155fa0. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    primaryStrong?: string | null;
+    /**
+     * Default: #414042. The softer grey used for body paragraphs. This is the LIGHTER of the two text colours — for headings and high-contrast text use “Strong text” beside it.
+     */
+    text?: string | null;
+    /**
+     * Default: #222222. The near-black used for headings and high-contrast copy. Despite the field being named “muted” internally, this is the DARKER of the two.
+     */
+    mutedText?: string | null;
+    /**
+     * Default: #cbe5fa. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    accent?: string | null;
+    /**
+     * Default: #c6c6c6. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    border?: string | null;
+    /**
+     * Default: #93d0f7. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    accentLight?: string | null;
+    /**
+     * Default: #1a3a5c. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    primaryDeep?: string | null;
+    /**
+     * Default: #ffffff. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    textOnDark?: string | null;
+    /**
+     * Default: rgba(255,255,255,0.82). Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    mutedTextOnDark?: string | null;
+    /**
+     * Default: #93d0f7. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    accentOnDark?: string | null;
+    /**
+     * Default: rgba(255,255,255,0.35). Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    borderOnDark?: string | null;
+    /**
+     * Default: #ffffff. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    background?: string | null;
+    /**
+     * Default: #ffffff. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    surface?: string | null;
+    /**
+     * Default: #414042. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    surfaceText?: string | null;
+    /**
+     * Used wherever the design calls for plain white — buttons, card fills, dividers. Changing it tints many small surfaces at once.
+     */
+    white?: string | null;
+    /**
+     * Default: #f1f5f9. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    muted?: string | null;
+    /**
+     * Default: #ffffff. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    primaryText?: string | null;
+    /**
+     * Outline colour shown when tabbing through links and inputs.
+     */
+    ring?: string | null;
+    /**
+     * Default: #cbe5fa. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    secondary?: string | null;
+    /**
+     * Default: #1c75bc. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    secondaryText?: string | null;
+    /**
+     * Default: #2d8fe8. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    secondaryBright?: string | null;
+    /**
+     * Default: #14639e. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    gradientStart?: string | null;
+    /**
+     * Default: #93abbf. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    steel?: string | null;
+    /**
+     * Default: #1a3a5c. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    navy?: string | null;
+    /**
+     * Default: #5ba3d9. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    definitionBlue?: string | null;
+    /**
+     * Default: #c6c6c6. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    paleSurface?: string | null;
+    /**
+     * Default: #000000. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    inkBlack?: string | null;
+    /**
+     * Default: #414042. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    inkCharcoal?: string | null;
+    /**
+     * Default: #555555. Deliberately darker than the design reference’s greys, which fall below AA contrast on the site’s own grey band. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    inkGrey?: string | null;
+    /**
+     * Default: oklch(78% 0.08 200deg). Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    success?: string | null;
+    /**
+     * Default: oklch(89% 0.1 75deg). Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    warning?: string | null;
+    /**
+     * Default: oklch(75% 0.15 25deg). Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    error?: string | null;
+    /**
+     * Default: #c0392b. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    formError?: string | null;
+    /**
+     * Default: #2563eb. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    calloutInfo?: string | null;
+    /**
+     * Default: #475569. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    calloutNote?: string | null;
+    /**
+     * Default: #16a34a. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    calloutSuccess?: string | null;
+    /**
+     * Default: #d97706. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    calloutWarning?: string | null;
+    /**
+     * Default: #2e9e6b. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    availInPerson?: string | null;
+    /**
+     * Default: #6b46c1. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    availTelehealth?: string | null;
+    /**
+     * Default: #e6b033. Hex, rgb(a) or any CSS colour. Empty = default.
+     */
+    availEither?: string | null;
+  };
+  /**
+   * The trail shown at the top of every page hero. These apply site-wide; the middle “section” crumb is set per content type (Article Settings, Team Settings, Events Settings, Specialist Profile). Individual pages can hide the trail from the page’s Hero tab.
+   */
+  breadcrumbs?: {
+    /**
+     * First crumb, on every trail.
+     */
+    homeLabel?: string | null;
+    /**
+     * Character between crumbs. Default “›”.
+     */
+    separator?: string | null;
+    /**
+     * Names the navigation landmark for screen readers.
+     */
+    navLabel?: string | null;
+  };
+  /**
+   * Wording for the assistive-technology affordances that appear on every page.
+   */
+  accessibility?: {
+    /**
+     * The link a keyboard user reaches by pressing Tab once, which jumps past the navigation to the page content. It is invisible until focused. Left empty, “Skip to content” is used — the link is never removed, because it is the only way to bypass the nav.
+     */
+    skipLinkLabel?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Reusable style presets and a box for site-wide CSS. See HOOKS.md before adding CSS — a block option or a Design System value is usually the better tool.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "custom-styles".
+ */
+export interface CustomStyle {
+  id: number;
+  /**
+   * Define a reusable style once, then apply it by name on any block/hero/page. Target the stable vf-* hook classes (e.g. .vf-card, .vf-section-header__title, .vf-carousel__arrow) and brand tokens (var(--primary), var(--accent), var(--vf-shadow-lg), var(--vf-radius-card)…) rather than literal colours, so your styles survive a rebrand. See src/Styles/HOOKS.md for the full reference — it also lists which admin field controls each token. Scope to a block via ".your-class .vf-card { … }".
+   */
+  presets?:
+    | {
+        /**
+         * e.g. "card-elevated" (no dot, no spaces).
+         */
+        name: string;
+        /**
+         * Friendly name shown in the picker.
+         */
+        label?: string | null;
+        /**
+         * What this style does / when to use it.
+         */
+        description?: string | null;
+        /**
+         * Full CSS rule(s), e.g. ".card-elevated > * { box-shadow: var(--shadow-lg); }". Match the selector to the class name above.
+         */
+        css: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional base/root CSS not tied to a class — e.g. ":root { … }", "@font-face { … }". Injected as-is on every page.
+   */
+  globalCss?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Edit what each spacing/size preset means. Changes apply across the whole site instantly. These set the values; pick a preset per block in the page editor.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "design-system".
+ */
+export interface DesignSystem {
+  id: number;
+  /**
+   * Font families used site-wide. Empty = the brand defaults, Montserrat for headings and Open Sans for body. (MuseoSansRounded is also bundled and is used for the hero “VERIFY” wordmark.) To use a font that is not bundled, first load it via Globals → Custom Styles → Global CSS (@font-face), then enter its family name here. Text colours live in Site Settings → Brand colours.
+   */
+  typography?: {
+    /**
+     * Default: 'Montserrat', sans-serif. Any CSS font-family list. Empty = default.
+     */
+    headingFont?: string | null;
+    /**
+     * Default: 'Open Sans', sans-serif. Any CSS font-family list. Empty = default.
+     */
+    bodyFont?: string | null;
+    /**
+     * Default: 1.125rem. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    baseSize?: string | null;
+    /**
+     * Scales the whole site proportionally — text and the spacing around it. Use this rather than editing individual sizes. 100% is the designed size. Page width is unaffected, so larger settings mean bigger type in the same column.
+     */
+    textScale?: ('0.9' | '0.95' | '1' | '1.05' | '1.1' | '1.15' | '1.25') | null;
+  };
+  /**
+   * Vertical padding presets for sections (also drives Spacer atoms).
+   */
+  spacing?: {
+    /**
+     * Default: clamp(2rem, 4vw, 3rem). Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    compact?: string | null;
+    /**
+     * Default: clamp(3.5rem, 8vw, 5.5rem). Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    normal?: string | null;
+    /**
+     * Default: clamp(5rem, 10vw, 7.5rem). Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    spacious?: string | null;
+    /**
+     * Default: clamp(7rem, 12vw, 10rem). Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    xl?: string | null;
+  };
+  /**
+   * Space between columns in a Row.
+   */
+  gaps?: {
+    /**
+     * Default: 1rem. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    tight?: string | null;
+    /**
+     * Default: 2rem. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    normal?: string | null;
+    /**
+     * Default: 3.5rem. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    wide?: string | null;
+  };
+  /**
+   * Visual sizes for the Heading atom (independent of level).
+   */
+  headings?: {
+    /**
+     * Default: clamp(1.1rem, 2vw, 1.25rem). Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    sm?: string | null;
+    /**
+     * Default: clamp(1.35rem, 2.5vw, 1.6rem). Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    md?: string | null;
+    /**
+     * Default: clamp(1.75rem, 3.5vw, 2.4rem). Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    lg?: string | null;
+    /**
+     * Default: clamp(2.25rem, 5vw, 3.25rem). Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    xl?: string | null;
+    /**
+     * Default: clamp(2.75rem, 7vw, 4.5rem). Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    display?: string | null;
+  };
+  /**
+   * Sizes for the Text block’s Small/Base/Large options only. This does NOT set the size of body copy generally — for that use Typography → Base body text size.
+   */
+  text?: {
+    /**
+     * Default: 0.9rem. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    sm?: string | null;
+    /**
+     * Default: 1rem. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    base?: string | null;
+    /**
+     * Default: 1.2rem. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    lg?: string | null;
+  };
+  /**
+   * How rounded each kind of element is. Set every one to 0 for a fully square look. The names below are a rough guide only — usage has drifted, so several element types are rounded by a token whose name suggests something else (most cards, for example, take their radius from “Tile”). If one field does not change what you expected, try its neighbours before assuming the control is broken.
+   */
+  radius?: {
+    /**
+     * Default: 0. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    none?: string | null;
+    /**
+     * Default: 8px. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    sm?: string | null;
+    /**
+     * Default: 10px. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    chip?: string | null;
+    /**
+     * Default: 12px. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    card?: string | null;
+    /**
+     * Default: 14px. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    tile?: string | null;
+    /**
+     * Default: 16px. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    md?: string | null;
+    /**
+     * Default: 20px. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    panel?: string | null;
+    /**
+     * Default: 999px. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    pill?: string | null;
+    /**
+     * Default: 50%. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    circle?: string | null;
+    /**
+     * Default: 0.5rem. Any CSS length. Used by inputs, buttons and other form controls. Empty = default.
+     */
+    base?: string | null;
+  };
+  /**
+   * Reusable gradient recipes. The colours inside them follow the brand palette automatically, so you only need to edit these to change a gradient’s angle or stop layout. Section band gradients live under “Section bands” above.
+   */
+  gradients?: {
+    /**
+     * Default: linear-gradient(145deg, var(--accent), var(--accent-light)). Any CSS gradient or colour. Empty = default.
+     */
+    imageTint?: string | null;
+    /**
+     * Default: linear-gradient(135deg, var(--primary-deep) 0%, var(--primary) 100%). Any CSS gradient or colour. Empty = default.
+     */
+    deep?: string | null;
+    /**
+     * Default: linear-gradient(160deg, var(--gradient-start) 0%, var(--primary) 100%). Any CSS gradient or colour. Empty = default.
+     */
+    hero?: string | null;
+    /**
+     * Default: linear-gradient(145deg, #f2f9ff, #d8eefc). Any CSS gradient or colour. Empty = default.
+     */
+    avatarTint?: string | null;
+  };
+  /**
+   * Background colour/gradient for each section banding option.
+   */
+  bands?: {
+    /**
+     * Default: #f5f6f8. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    muted?: string | null;
+    /**
+     * Default: linear-gradient(135deg, #eef9ff, #e6f4ff, #d9efff). Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    accent?: string | null;
+    /**
+     * Default: linear-gradient(135deg, #0d4f85, #1c75bc). Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    primary?: string | null;
+    /**
+     * Default: #414042. Any CSS length (px, rem, clamp…). Empty = default.
+     */
+    dark?: string | null;
+  };
+  /**
+   * Depth and glow presets, picked per block via "Card shadow". "Shadow colour" tints the whole scale at once — it follows the brand primary from Site Settings unless overridden here, so a darker brand colour makes every shadow heavier. Large-panel shadows use their own slate colour, because brand blue reads wrong at big blur radii.
+   */
+  effects?: {
+    /**
+     * Default: var(--primary). Any CSS colour. Empty = default.
+     */
+    color?: string | null;
+    /**
+     * Default: #2b4a62. Any CSS colour. Empty = default.
+     */
+    colorDeep?: string | null;
+    /**
+     * Default: 0 1px 8px color-mix(in srgb, var(--vf-shadow-color) 5%, transparent). Any CSS box-shadow value (comma-separate multiple layers). Empty = default.
+     */
+    xs?: string | null;
+    /**
+     * Default: 0 4px 24px color-mix(in srgb, var(--vf-shadow-color) 10%, transparent). Any CSS box-shadow value (comma-separate multiple layers). Empty = default.
+     */
+    sm?: string | null;
+    /**
+     * Default: 0 12px 32px color-mix(in srgb, var(--vf-shadow-color) 13%, transparent). Any CSS box-shadow value (comma-separate multiple layers). Empty = default.
+     */
+    md?: string | null;
+    /**
+     * Default: 0 8px 40px color-mix(in srgb, var(--vf-shadow-color) 16%, transparent). Any CSS box-shadow value (comma-separate multiple layers). Empty = default.
+     */
+    lg?: string | null;
+    /**
+     * Default: 0 24px 60px color-mix(in srgb, var(--vf-shadow-color-deep) 13%, transparent). Any CSS box-shadow value (comma-separate multiple layers). Empty = default.
+     */
+    xl?: string | null;
+    /**
+     * Default: 0 32px 72px color-mix(in srgb, var(--vf-shadow-color-deep) 22%, transparent). Any CSS box-shadow value (comma-separate multiple layers). Empty = default.
+     */
+    xxl?: string | null;
+    /**
+     * Default: 0 4px 18px color-mix(in srgb, var(--vf-shadow-color) 28%, transparent). Any CSS box-shadow value (comma-separate multiple layers). Empty = default.
+     */
+    glowSm?: string | null;
+    /**
+     * Default: 0 6px 20px color-mix(in srgb, var(--vf-shadow-color) 30%, transparent). Any CSS box-shadow value (comma-separate multiple layers). Empty = default.
+     */
+    glowMd?: string | null;
+    /**
+     * Default: 0 8px 28px color-mix(in srgb, var(--vf-shadow-color) 38%, transparent). Any CSS box-shadow value (comma-separate multiple layers). Empty = default.
+     */
+    glowLg?: string | null;
+    /**
+     * Default: 0 0 0 3px color-mix(in srgb, var(--vf-shadow-color) 12%, transparent). Any CSS box-shadow value (comma-separate multiple layers). Empty = default.
+     */
+    ring?: string | null;
+    /**
+     * Default: inset 0 1px 0 rgba(255,255,255,0.95). Any CSS box-shadow value (comma-separate multiple layers). Empty = default.
+     */
+    insetHighlight?: string | null;
+    /**
+     * Default: 6px 6px 0 var(--primary). Any CSS box-shadow value (comma-separate multiple layers). Empty = default.
+     */
+    hard?: string | null;
+    /**
+     * Default: 0.28s cubic-bezier(0.4, 0, 0.2, 1). Duration and easing for hover/focus animations site-wide. Use “0s” to switch transitions off. Empty = default.
+     */
+    transition?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Every icon this site can use, in one place: the 1,513 Phosphor ships plus any SVG you upload. Tick the ones editors may choose.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "icon-library".
+ */
+export interface IconLibrary {
+  id: number;
+  /**
+   * Tick an icon to offer it to editors. Upload your own with the button above. Unticking one stops it being offered; it never changes a page that already uses it.
+   */
+  icons?: string[] | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "article-settings_select".
+ */
+export interface ArticleSettingsSelect<T extends boolean = true> {
+  sidebarCards?:
+    | T
+    | {
+        icon?: T;
+        heading?: T;
+        body?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+            };
+        id?: T;
+      };
+  labels?:
+    | T
+    | {
+        attachmentsHeading?: T;
+        related?: T;
+        toc?: T;
+        topics?: T;
+        breadcrumbSectionLabel?: T;
+        streamFallbackSubtitle?: T;
+        bylinePrefix?: T;
+        minReadSuffix?: T;
+        shareLinkedinLabel?: T;
+        shareCopyLabel?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events-settings_select".
+ */
+export interface EventsSettingsSelect<T extends boolean = true> {
+  aamle?:
+    | T
+    | {
+        blurb?: T;
+        callout?: T;
+        attendHeading?: T;
+        recapHeading?: T;
+        attendBody?: T;
+        registerLabel?: T;
+        contactLabel?: T;
+        hostEventLinkLabel?: T;
+      };
+  verify?:
+    | T
+    | {
+        blurb?: T;
+        callout?: T;
+        attendHeading?: T;
+        recapHeading?: T;
+        attendBody?: T;
+        registerLabel?: T;
+        contactLabel?: T;
+        hostEventLinkLabel?: T;
+      };
+  labels?:
+    | T
+    | {
+        presentersHeading?: T;
+        breadcrumbSectionLabel?: T;
+        statusUpcomingLabel?: T;
+        statusPastLabel?: T;
+        freeLabel?: T;
+        cpdPointsTemplate?: T;
+        cpdEligibleLabel?: T;
+        concludedFallback?: T;
+        concludedWithMaterials?: T;
+        backToEventsLabel?: T;
+        contactUrl?: T;
+        recapTocLabel?: T;
+        galleryHeading?: T;
+        attachmentsHeading?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-settings_select".
+ */
+export interface TeamSettingsSelect<T extends boolean = true> {
+  labels?:
+    | T
+    | {
+        breadcrumbSectionLabel?: T;
+        qualificationLabel?: T;
+        aboutPrefix?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "specialist-profile_select".
+ */
+export interface SpecialistProfileSelect<T extends boolean = true> {
+  portalCta?:
+    | T
+    | {
+        eyebrow?: T;
+        heading?: T;
+        subheading?: T;
+        tiles?:
+          | T
+          | {
+              icon?: T;
+              label?: T;
+              id?: T;
+            };
+        enquiryLabel?: T;
+        bookingLabel?: T;
+        cvLabel?: T;
+        sampleReportLabel?: T;
+        enquiryEmail?: T;
+      };
+  portalEnquirySubject?: T;
+  portalEnquiryType?: T;
+  labels?:
+    | T
+    | {
+        biography?: T;
+        assessmentAreas?: T;
+        qualifications?: T;
+        accreditations?: T;
+        assessmentTypes?: T;
+        claimTypes?: T;
+      };
+  breadcrumb?:
+    | T
+    | {
+        breadcrumbParentLabel?: T;
+        breadcrumbParentHref?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "specialist-availability_select".
+ */
+export interface SpecialistAvailabilitySelect<T extends boolean = true> {
+  heading?: T;
+  intro?: T;
+  carouselEyebrow?: T;
+  carouselTitle?: T;
+  carouselSubtitle?: T;
+  enquiryEmail?: T;
+  enquirySubject?: T;
+  enquiryBodyIntro?: T;
+  enquiryBodyFooter?: T;
+  labels?:
+    | T
+    | {
+        modeInPersonLabel?: T;
+        modeTelehealthLabel?: T;
+        modeEitherLabel?: T;
+        selectionHint?: T;
+        clearLabel?: T;
+        sendEnquiryLabel?: T;
+        sessionsSelectedTemplate?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "header_select".
+ */
+export interface HeaderSelect<T extends boolean = true> {
+  navItems?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+            };
+        subItems?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                    anchor?: T;
+                    icon?: T;
+                  };
+              subSubItems?:
+                | T
+                | {
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                          label?: T;
+                          anchor?: T;
+                          icon?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  cta?:
+    | T
+    | {
+        enabled?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer_select".
+ */
+export interface FooterSelect<T extends boolean = true> {
+  tagline?: T;
+  columns?:
+    | T
+    | {
+        title?: T;
+        links?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                    anchor?: T;
+                    icon?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  contact?:
+    | T
+    | {
+        phone?: T;
+        phoneHref?: T;
+        email?: T;
+        address?: T;
+      };
+  hours?:
+    | T
+    | {
+        days?: T;
+        time?: T;
+        id?: T;
+      };
+  social?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  legalLinks?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              anchor?: T;
+              icon?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  siteName?: T;
+  logo?: T;
+  logoFooter?: T;
+  favicon?: T;
+  shield?: T;
+  socialImage?: T;
+  enquiryForm?: T;
+  registrationEnquiryEmail?: T;
+  registrationEnquirySubject?: T;
+  registrationEnquiryBody?: T;
+  colors?:
+    | T
+    | {
+        primary?: T;
+        primaryStrong?: T;
+        text?: T;
+        mutedText?: T;
+        accent?: T;
+        border?: T;
+        accentLight?: T;
+        primaryDeep?: T;
+        textOnDark?: T;
+        mutedTextOnDark?: T;
+        accentOnDark?: T;
+        borderOnDark?: T;
+        background?: T;
+        surface?: T;
+        surfaceText?: T;
+        white?: T;
+        muted?: T;
+        primaryText?: T;
+        ring?: T;
+        secondary?: T;
+        secondaryText?: T;
+        secondaryBright?: T;
+        gradientStart?: T;
+        steel?: T;
+        navy?: T;
+        definitionBlue?: T;
+        paleSurface?: T;
+        inkBlack?: T;
+        inkCharcoal?: T;
+        inkGrey?: T;
+        success?: T;
+        warning?: T;
+        error?: T;
+        formError?: T;
+        calloutInfo?: T;
+        calloutNote?: T;
+        calloutSuccess?: T;
+        calloutWarning?: T;
+        availInPerson?: T;
+        availTelehealth?: T;
+        availEither?: T;
+      };
+  breadcrumbs?:
+    | T
+    | {
+        homeLabel?: T;
+        separator?: T;
+        navLabel?: T;
+      };
+  accessibility?:
+    | T
+    | {
+        skipLinkLabel?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "custom-styles_select".
+ */
+export interface CustomStylesSelect<T extends boolean = true> {
+  presets?:
+    | T
+    | {
+        name?: T;
+        label?: T;
+        description?: T;
+        css?: T;
+        id?: T;
+      };
+  globalCss?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "design-system_select".
+ */
+export interface DesignSystemSelect<T extends boolean = true> {
+  typography?:
+    | T
+    | {
+        headingFont?: T;
+        bodyFont?: T;
+        baseSize?: T;
+        textScale?: T;
+      };
+  spacing?:
+    | T
+    | {
+        compact?: T;
+        normal?: T;
+        spacious?: T;
+        xl?: T;
+      };
+  gaps?:
+    | T
+    | {
+        tight?: T;
+        normal?: T;
+        wide?: T;
+      };
+  headings?:
+    | T
+    | {
+        sm?: T;
+        md?: T;
+        lg?: T;
+        xl?: T;
+        display?: T;
+      };
+  text?:
+    | T
+    | {
+        sm?: T;
+        base?: T;
+        lg?: T;
+      };
+  radius?:
+    | T
+    | {
+        none?: T;
+        sm?: T;
+        chip?: T;
+        card?: T;
+        tile?: T;
+        md?: T;
+        panel?: T;
+        pill?: T;
+        circle?: T;
+        base?: T;
+      };
+  gradients?:
+    | T
+    | {
+        imageTint?: T;
+        deep?: T;
+        hero?: T;
+        avatarTint?: T;
+      };
+  bands?:
+    | T
+    | {
+        muted?: T;
+        accent?: T;
+        primary?: T;
+        dark?: T;
+      };
+  effects?:
+    | T
+    | {
+        color?: T;
+        colorDeep?: T;
+        xs?: T;
+        sm?: T;
+        md?: T;
+        lg?: T;
+        xl?: T;
+        xxl?: T;
+        glowSm?: T;
+        glowMd?: T;
+        glowLg?: T;
+        ring?: T;
+        insetHighlight?: T;
+        hard?: T;
+        transition?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "icon-library_select".
+ */
+export interface IconLibrarySelect<T extends boolean = true> {
+  icons?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "collections_widget".
  */
@@ -320,6 +15629,76 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSchedulePublish".
+ */
+export interface TaskSchedulePublish {
+  input: {
+    type?: ('publish' | 'unpublish') | null;
+    locale?: string | null;
+    doc?:
+      | ({
+          relationTo: 'pages';
+          value: number | Page;
+        } | null)
+      | ({
+          relationTo: 'posts';
+          value: number | Post;
+        } | null)
+      | ({
+          relationTo: 'events';
+          value: number | Event;
+        } | null)
+      | ({
+          relationTo: 'specialists';
+          value: number | Specialist;
+        } | null)
+      | ({
+          relationTo: 'team';
+          value: number | Team;
+        } | null);
+    global?: string | null;
+    user?: (number | null) | User;
+  };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BannerBlock".
+ */
+export interface BannerBlock {
+  style: 'info' | 'warning' | 'error' | 'success';
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'banner';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CodeBlock".
+ */
+export interface CodeBlock {
+  language?: ('typescript' | 'javascript' | 'css') | null;
+  code: string;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'code';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
