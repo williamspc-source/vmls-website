@@ -1,0 +1,16 @@
+import type { GlobalAfterChangeHook } from 'payload'
+
+import { safeRevalidateTag as revalidateTag } from '@/utilities/safeRevalidate'
+
+export const revalidateSiteSettings: GlobalAfterChangeHook = ({
+  doc,
+  req: { payload, context },
+}) => {
+  if (!context.disableRevalidate) {
+    payload.logger.info(`Revalidating site settings`)
+
+    revalidateTag('global_site-settings')
+  }
+
+  return doc
+}
